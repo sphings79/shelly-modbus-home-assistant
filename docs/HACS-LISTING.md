@@ -1,11 +1,11 @@
 # Getting listed in HACS
 
-Two separate submissions, in this order. Only the first is required to appear in HACS.
+One submission. The icon is already handled inside this repository.
 
-| Step | Repository | Purpose | Required? |
+| Step | Repository | Purpose | Status |
 |---|---|---|---|
-| 1 | `hacs/default` | Makes the integration appear in HACS without adding a custom repository | **Yes** |
-| 2 | `home-assistant/brands` | Shows the icon inside Home Assistant itself | Optional |
+| 1 | `hacs/default` | Makes the integration appear in HACS without adding a custom repository | [PR #10260](https://github.com/hacs/default/pull/10260) |
+| 2 | `home-assistant/brands` | — | **Not applicable any more**, see below |
 
 ---
 
@@ -74,33 +74,27 @@ appear instantly.
 
 ---
 
-## Step 2 — `home-assistant/brands` (icon inside Home Assistant)
+## Step 2 — not needed
 
-Not needed for the HACS listing: HACS is already satisfied by the `brand/` folder in this
-repository. Do this so Home Assistant shows the icon on the Devices & Services page.
+`home-assistant/brands` **no longer accepts pull requests for custom integrations**. Its
+pull request template states this outright, pointing at the
+[Brands Proxy API announcement](https://developers.home-assistant.io/blog/2026/02/24/brands-proxy-api).
 
-1. Fork <https://github.com/home-assistant/brands>.
+Since Home Assistant 2026.3, a custom integration ships its own brand images in a `brand/`
+subdirectory, which Home Assistant serves through `/api/brands/integration/{domain}/{image}`.
+Local images take priority over the brands CDN, and no manifest entry is required.
 
-2. Add exactly these two files:
+This repository already has exactly that:
 
-   ```
-   custom_integrations/shelly_modbus/icon.png       256x256
-   custom_integrations/shelly_modbus/icon@2x.png    512x512
-   ```
+```
+custom_components/shelly_modbus/brand/
+├── icon.png        256x256
+├── icon@2x.png     512x512
+├── logo.png
+└── logo@2x.png
+```
 
-   Prepared, brands-compliant copies (interlaced, optimised, transparent) are ready to
-   drop in — see the note below.
-
-3. Open the PR.
-
-**Submit the icons only, not the logo.** The brands rules state that custom integrations
-"must not use Home Assistant branded images, as this might confuse the end-user into
-thinking that the integration is an internal/official integration". This repository's
-`logo.png` carries the wording *"for Home Assistant"* and would be rejected on that basis.
-The icons contain no Home Assistant branding and are fine.
-
-Once merged, the icon is served from
-`https://brands.home-assistant.io/shelly_modbus/icon.png`.
+So the icon shows up in Home Assistant with nothing further to do.
 
 ---
 
