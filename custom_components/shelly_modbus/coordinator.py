@@ -204,11 +204,30 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
                 if entry.unique_id.startswith(prefix):
                     disabled.add(entry.unique_id[len(prefix) :])
 
+        # A derived sensor needs its sources read even when the source entity
+        # itself is disabled, otherwise disabling the raw phase power would
+        # silently break the netted sensors.
+        required: set[str] = set()
+        for definition in self.definitions:
+            if definition.get("access") != "derived":
+                continue
+            if definition["key"] in disabled:
+                continue
+            if self._registered_keys and definition["key"] not in self._registered_keys:
+                continue
+            required.update(definition["sources"])
+
         selected = []
         for definition in self.definitions:
+            if definition.get("access") == "derived":
+                # Computed after the reads, never fetched over Modbus.
+                continue
             if definition["scan_interval"] not in categories:
                 continue
             key = definition["key"]
+            if key in required:
+                selected.append(definition)
+                continue
             if key in disabled:
                 continue
             # Before a platform has registered its entities, read everything so
@@ -264,6 +283,8 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
                     read_any = True
                     data[definition["key"]] = value
 
+        self._apply_derived(data)
+
         if not read_any and definitions:
             self._consecutive_failures += 1
             raise UpdateFailed(
@@ -279,6 +300,30 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
             self._static_done = True
 
         return data
+
+    def _apply_derived(self, data: dict[str, Any]) -> None:
+        """Fill in values that are computed from other registers.
+
+        Currently the netted grid import/export power: the signed active power
+        of every phase is summed, then split into the importing and exporting
+        half. This is what a netting grid meter records, and what the device's
+        own per-phase energy counters cannot express.
+        """
+        for definition in self.definitions:
+            if definition.get("access") != "derived":
+                continue
+
+            values = [data.get(source) for source in definition["sources"]]
+            if any(v is None or isinstance(v, bool) for v in values):
+                # A missing source makes the result meaningless rather than zero.
+                data[definition["key"]] = None
+                continue
+
+            total = sum(values)
+            if definition["sign"] == "positive":
+                data[definition["key"]] = max(total, 0.0)
+            else:
+                data[definition["key"]] = max(-total, 0.0)
 
     def _decode(self, definition: dict[str, Any], registers: list[int]) -> Any:
         """Decode one field and apply its scale factor."""

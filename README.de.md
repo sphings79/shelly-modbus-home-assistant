@@ -238,11 +238,59 @@ Ausgang (schaltbar), dazu Spannung, Strom, Wirkleistung, Frequenz, Leistungsfakt
 und Fehlermeldungen bei Modellen mit Leistungsmessung. Physische Eingänge erscheinen als
 Binärsensoren.
 
+### Saldierte Netzleistung — vor dem Energie-Dashboard lesen
+
+Die Energiezähler von Shelly **saldieren nicht über die Phasen**. Jede Phase führt eigene
+Bezugs- und Einspeisezähler, und das Gerät addiert diese nur auf. Bei einem deutschen
+Zweirichtungszähler, der über alle drei Phasen saldiert, entstehen dadurch massiv
+überhöhte Werte.
+
+Der klassische Fall — PV speist auf einer Phase ein, während das Haus auf den anderen bezieht:
+
+| | Phase A | Phase B | Phase C | Summe |
+|---|---|---|---|---|
+| Leistung | −600 W | +50 W | +550 W | **0 W** |
+| Ein saldierender Zähler erfasst | | | | nichts |
+| Die Shelly-Zähler erfassen | 600 Wh Einspeisung | 50 Wh Bezug | 550 Wh Bezug | 600 Wh Einspeisung **und** 600 Wh Bezug |
+
+An einem Pro 3EM nachgemessen: `total_act_power` (Register 31013) **ist** korrekt saldiert,
+`total_act_energy` (31162) dagegen nur die Summe der Phasenzähler.
+
+Deshalb stellt die Integration bei Dreiphasenzählern zwei zusätzliche Sensoren bereit:
+
+| Entität | Bedeutung |
+|---|---|
+| **Netzbezug Leistung (saldiert)** | `max(0, Summe aller Phasenleistungen)` |
+| **Netzeinspeisung Leistung (saldiert)** | `max(0, −Summe aller Phasenleistungen)` |
+
+Sie werden aus der bereits saldierten, vorzeichenbehafteten Leistung berechnet und verhalten
+sich damit wie ein saldierender Zähler. Aus den kumulierten Zählerständen lässt sich die
+Saldierung **nicht** nachträglich reparieren — sie muss im Moment der Messung geschehen.
+Darum bleiben die Roh-Energieregister unverändert so, wie das Gerät sie meldet.
+
+**Für korrekte kWh** werden die beiden Sensoren über die Zeit integriert. In Home Assistant
+unter **Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → Integral-Sensor
+(Riemann-Summe)** je einen anlegen:
+
+| Einstellung | Wert |
+|---|---|
+| Eingangssensor | *Netzbezug Leistung (saldiert)* bzw. *Netzeinspeisung Leistung (saldiert)* |
+| Integrationsmethode | **Trapez-Regel** |
+| Metrisches Präfix | **k** (Kilo) |
+| Zeiteinheit | Stunden |
+
+Die beiden entstehenden `kWh`-Sensoren gehören ins Energie-Dashboard unter **Netzbezug** und
+**Einspeisung ins Netz** — nicht die geräteeigenen Energiesensoren.
+
+Ein kürzeres Intervall für schnelle Werte (1–2 s) erhöht die Genauigkeit dieser Integration,
+weil die Leistung häufiger abgetastet wird. Siehe
+[Abfrageintervalle](#3-abfrageintervalle-einstellen).
+
 ### Energie-Dashboard
 
-Die Sensoren `Gesamte Wirkenergie` und `Gesamte eingespeiste Wirkenergie` sind
-Lebensdauer-Zählerstände mit `state_class: total_increasing` und lassen sich damit direkt als
-Netzbezug und Netzeinspeisung im Home-Assistant-Energie-Dashboard verwenden.
+Bei Einphasenzählern, oder wenn der eigene Netzzähler tatsächlich je Phase abrechnet, sind
+die geräteeigenen Sensoren `Gesamte Wirkenergie` und `Gesamte eingespeiste Wirkenergie`
+Lebensdauer-Zählerstände mit `state_class: total_increasing` und direkt verwendbar.
 
 ---
 

@@ -263,6 +263,12 @@
       },
       "switch_act_ret_energy": {
         "name": "Switch {idx} Active Returned Energy"
+      },
+      "grid_import_power": {
+        "name": "Grid Import Power (netted)"
+      },
+      "grid_export_power": {
+        "name": "Grid Export Power (netted)"
       }
     },
     "binary_sensor": {

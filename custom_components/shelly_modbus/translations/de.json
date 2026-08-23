@@ -263,6 +263,12 @@
       },
       "switch_act_ret_energy": {
         "name": "Schalter {idx} Eingespeiste Wirkenergie"
+      },
+      "grid_import_power": {
+        "name": "Netzbezug Leistung (saldiert)"
+      },
+      "grid_export_power": {
+        "name": "Netzeinspeisung Leistung (saldiert)"
       }
     },
     "binary_sensor": {

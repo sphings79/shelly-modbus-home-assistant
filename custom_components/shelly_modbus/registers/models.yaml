@@ -5,6 +5,11 @@
 # (documented address 30006), so a connected device can be identified
 # automatically.  Model codes follow the official Shelly product identifiers.
 #
+# `grid: true` marks a profile whose components together measure one grid
+# connection. Only then are the netted (saldierte) import/export power sensors
+# added, because summing channels that meter unrelated circuits would be
+# meaningless.
+#
 # Devices whose measuring profile can be switched (the 3-phase energy meters can
 # run as one 3-phase meter or as three independent single-phase meters) declare
 # one entry per profile.  Which profile is active is detected by probing, and
@@ -17,10 +22,12 @@ models:
     default_profile: triphase
     profiles:
       triphase:
+        grid: true
         components:
           - {type: em, id: 0}
           - {type: emdata, id: 0}
       monophase:
+        grid: true
         components:
           - {type: em1, id: 0}
           - {type: em1, id: 1}
@@ -35,10 +42,12 @@ models:
     default_profile: triphase
     profiles:
       triphase:
+        grid: true
         components:
           - {type: em, id: 0}
           - {type: emdata, id: 0}
       monophase:
+        grid: true
         components:
           - {type: em1, id: 0}
           - {type: em1, id: 1}
@@ -53,10 +62,12 @@ models:
     default_profile: triphase
     profiles:
       triphase:
+        grid: true
         components:
           - {type: em, id: 0}
           - {type: emdata, id: 0}
       monophase:
+        grid: true
         components:
           - {type: em1, id: 0}
           - {type: em1, id: 1}
@@ -71,10 +82,12 @@ models:
     default_profile: triphase
     profiles:
       triphase:
+        grid: true
         components:
           - {type: em, id: 0}
           - {type: emdata, id: 0}
       monophase:
+        grid: true
         components:
           - {type: em1, id: 0}
           - {type: em1, id: 1}
@@ -102,10 +115,12 @@ models:
     default_profile: triphase
     profiles:
       triphase:
+        grid: true
         components:
           - {type: em, id: 0}
           - {type: emdata, id: 0}
       monophase:
+        grid: true
         components:
           - {type: em1, id: 0}
           - {type: em1, id: 1}

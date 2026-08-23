@@ -234,11 +234,57 @@ Returned Energy and the error flags — one set per channel, named `Channel 1`, 
 Output (writable), plus Voltage, Current, Active Power, Frequency, Power Factor, Active Energy
 and error flags on models with a power meter. Physical inputs appear as binary sensors.
 
+### Netted grid power — read this before using the energy dashboard
+
+Shelly's energy counters are **not netted across phases**. Each phase accumulates its own
+import and export counter, and the device only adds those up. On a German-style
+bidirectional meter that nets across all three phases, that produces badly inflated numbers.
+
+The classic case — solar exporting on one phase while the house draws on the others:
+
+| | Phase A | Phase B | Phase C | Sum |
+|---|---|---|---|---|
+| Power | −600 W | +50 W | +550 W | **0 W** |
+| A netting grid meter records | | | | nothing |
+| Shelly's counters record | 600 Wh export | 50 Wh import | 550 Wh import | 600 Wh export **and** 600 Wh import |
+
+Verified on a Pro 3EM: `total_act_power` (register 31013) **is** correctly netted, but
+`total_act_energy` (31162) is merely the sum of the per-phase counters.
+
+Because of this, the integration provides two extra sensors on three-phase meters:
+
+| Entity | Meaning |
+|---|---|
+| **Grid Import Power (netted)** | `max(0, sum of all phase powers)` |
+| **Grid Export Power (netted)** | `max(0, −sum of all phase powers)` |
+
+These are computed from the already-netted signed power, so they behave like a netting
+meter. Netting cannot be repaired after the fact from the accumulated counters — it has to
+happen at the moment of measurement — which is why the raw energy registers stay as the
+device reports them.
+
+**To get correct kWh**, integrate the two sensors over time. In Home Assistant, go to
+**Settings → Devices & Services → Helpers → Create helper → Integration - Riemann sum**
+and add one for each:
+
+| Setting | Value |
+|---|---|
+| Input sensor | *Grid Import Power (netted)* / *Grid Export Power (netted)* |
+| Integration method | **Trapezoidal rule** |
+| Metric prefix | **k** (kilo) |
+| Time unit | Hours |
+
+The two resulting `kWh` sensors are what belongs in the energy dashboard under **Grid
+consumption** and **Return to grid** — not the device's own energy sensors.
+
+Lowering the fast polling interval to 1–2 s improves the accuracy of this integration,
+since it samples power more often. See [polling intervals](#3-tune-the-polling-intervals).
+
 ### Energy dashboard
 
-The `Total Active Energy` and `Total Active Returned Energy` sensors are lifetime counters with
-`state_class: total_increasing`, so they can be used directly as grid consumption and grid
-return in the Home Assistant energy dashboard.
+On single-phase meters, or if your grid meter genuinely bills per phase, the device's own
+`Total Active Energy` and `Total Active Returned Energy` are lifetime counters with
+`state_class: total_increasing` and can be used directly.
 
 ---
 

@@ -113,7 +113,76 @@ def expand_definitions(model: str, profile: str | None = None) -> list[dict[str,
     for instance in instances:
         definitions.extend(_expand_instance(components, instance))
 
+    if profiles.get(profile, {}).get("grid"):
+        definitions.extend(_netted_definitions(instances))
+
     return definitions
+
+
+# Fields holding the signed active power of one component instance. Summing
+# these across the instances gives the netted power of the grid connection.
+_ACTIVE_POWER_FIELD = {"em": "total_act_power", "em1": "act_power"}
+
+
+def _netted_definitions(instances: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Build the netted (saldierte) import and export power sensors.
+
+    Shelly meters accumulate energy per phase and only add those counters up,
+    so a house that exports on one phase while importing on another has both
+    counters running at once. A grid meter that nets across phases would record
+    only the difference. The energy registers cannot be corrected after the
+    fact — netting has to happen at the moment of measurement — but the
+    *power* registers are already signed and summed correctly, so they are the
+    right source. Integrating these two sensors over time yields energy figures
+    that match a netting meter.
+    """
+    sources = [
+        f"{instance['type']}_{int(instance.get('id', 0))}_{field}"
+        for instance in instances
+        if (field := _ACTIVE_POWER_FIELD.get(instance.get("type")))
+    ]
+    if not sources:
+        return []
+
+    shared = {
+        "component": "grid",
+        "component_id": 0,
+        "instance_label": None,
+        "translation_placeholders": None,
+        "data_type": "float",
+        "platform": "sensor",
+        "access": "derived",
+        "sources": sources,
+        "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
+        "precision": 1,
+        "enabled_by_default": True,
+        "scan_interval": SCAN_INTERVAL_HIGH,
+        "scale": None,
+        "category": None,
+    }
+
+    return [
+        {
+            **shared,
+            "key": "grid_import_power",
+            "field": "grid_import_power",
+            "translation_key": "grid_import_power",
+            "name": "Grid Import Power (netted)",
+            "icon": "mdi:transmission-tower-export",
+            "sign": "positive",
+        },
+        {
+            **shared,
+            "key": "grid_export_power",
+            "field": "grid_export_power",
+            "translation_key": "grid_export_power",
+            "name": "Grid Export Power (netted)",
+            "icon": "mdi:transmission-tower-import",
+            "sign": "negative",
+        },
+    ]
 
 
 def _expand_instance(

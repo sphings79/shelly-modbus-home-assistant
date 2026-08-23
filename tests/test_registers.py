@@ -180,3 +180,80 @@ class TestComponentMaps:
                     2 if field["data_type"] in ("float", "uint32") else 1
                 )
                 assert offset + count <= stride, f"{name}.{field_key} exceeds stride"
+
+
+class TestNettedSensors:
+    """The netted grid sensors compensate for Shelly's per-phase energy counters."""
+
+    def test_grid_profiles_get_netted_sensors(self):
+        keys = definitions_by_key("SPEM-003CEBEU", "triphase")
+        assert "grid_import_power" in keys
+        assert "grid_export_power" in keys
+
+    def test_source_is_the_signed_total_power(self):
+        keys = definitions_by_key("SPEM-003CEBEU", "triphase")
+        assert keys["grid_import_power"]["sources"] == ["em_0_total_act_power"]
+
+    def test_monophase_sums_every_channel(self):
+        keys = definitions_by_key("SPEM-003CEBEU", "monophase")
+        assert keys["grid_export_power"]["sources"] == [
+            "em1_0_act_power",
+            "em1_1_act_power",
+            "em1_2_act_power",
+        ]
+
+    def test_not_added_where_channels_meter_unrelated_circuits(self):
+        """Pro EM 50 meters two independent circuits — summing them is meaningless."""
+        for model in ("SPEM-002CEBEU50", "S3EM-002CXCEU", "S4SW-002P16EU"):
+            keys = definitions_by_key(model)
+            assert "grid_import_power" not in keys, model
+
+    def test_netted_sensors_are_not_read_over_modbus(self):
+        definitions = expand_definitions("SPEM-003CEBEU", "triphase")
+        planned = {d["key"] for block in build_blocks(definitions) for d in block}
+        assert "grid_import_power" not in planned
+        assert "grid_export_power" not in planned
+
+    def test_derived_definitions_carry_no_address(self):
+        for d in expand_definitions("SPEM-003CEBEU", "triphase"):
+            if d.get("access") == "derived":
+                assert "address" not in d
+
+    def test_they_are_power_sensors(self):
+        keys = definitions_by_key("SPEM-003CEBEU", "triphase")
+        for key in ("grid_import_power", "grid_export_power"):
+            d = keys[key]
+            assert d["unit"] == "W"
+            assert d["device_class"] == "power"
+            assert d["state_class"] == "measurement"
+            assert d["enabled_by_default"] is True
+
+
+class TestNettingMath:
+    """Reproduces the coordinator's split of signed power into import/export."""
+
+    @staticmethod
+    def split(total):
+        return max(total, 0.0), max(-total, 0.0)
+
+    def test_pure_import(self):
+        assert self.split(900.0) == (900.0, 0.0)
+
+    def test_pure_export(self):
+        assert self.split(-900.0) == (0.0, 900.0)
+
+    def test_the_case_shelly_gets_wrong(self):
+        """-600 W on one phase against +600 W on the others nets to zero.
+
+        Shelly's own counters would record 600 Wh of export *and* 600 Wh of
+        import at the same time; a netting meter records neither.
+        """
+        phases = [-600.0, 50.0, 550.0]
+        import_w, export_w = self.split(sum(phases))
+        assert import_w == 0.0
+        assert export_w == 0.0
+
+    def test_import_minus_export_is_always_the_signed_total(self):
+        for total in (-1234.5, -1.0, 0.0, 0.5, 4321.0):
+            i, e = self.split(total)
+            assert i - e == pytest.approx(total)
