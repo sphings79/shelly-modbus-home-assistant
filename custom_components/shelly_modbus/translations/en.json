@@ -269,6 +269,12 @@
       },
       "grid_export_power": {
         "name": "Grid Export Power (netted)"
+      },
+      "grid_import_energy": {
+        "name": "Grid Import Energy (netted)"
+      },
+      "grid_export_energy": {
+        "name": "Grid Export Energy (netted)"
       }
     },
     "binary_sensor": {

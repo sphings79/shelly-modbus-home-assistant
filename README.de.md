@@ -221,6 +221,10 @@ Spracheinstellung von Home Assistant.
 | Neutralleiterstrom | A | current | — |
 | Gesamte Wirkenergie | kWh | energy | ✅ |
 | Gesamte eingespeiste Wirkenergie | kWh | energy | ✅ |
+| Netzbezug Leistung (saldiert) | W | power | ✅ |
+| Netzeinspeisung Leistung (saldiert) | W | power | ✅ |
+| Netzbezug Energie (saldiert) | kWh | energy | ✅ |
+| Netzeinspeisung Energie (saldiert) | kWh | energy | ✅ |
 | Phase A/B/C Wirkenergie | kWh | energy | ✅ |
 | Phase A/B/C Eingespeiste Wirkenergie | kWh | energy | ✅ |
 | Zähler-, Überspannungs-, Überstrom-, Überlastfehler | — | problem | — |
@@ -256,34 +260,31 @@ Der klassische Fall — PV speist auf einer Phase ein, während das Haus auf den
 An einem Pro 3EM nachgemessen: `total_act_power` (Register 31013) **ist** korrekt saldiert,
 `total_act_energy` (31162) dagegen nur die Summe der Phasenzähler.
 
-Deshalb stellt die Integration bei Dreiphasenzählern zwei zusätzliche Sensoren bereit:
+Deshalb erhalten Dreiphasenzähler vier zusätzliche Sensoren — **ganz ohne Helfer**:
 
-| Entität | Bedeutung |
-|---|---|
-| **Netzbezug Leistung (saldiert)** | `max(0, Summe aller Phasenleistungen)` |
-| **Netzeinspeisung Leistung (saldiert)** | `max(0, −Summe aller Phasenleistungen)` |
+| Entität | Einheit | Bedeutung |
+|---|---|---|
+| **Netzbezug Leistung (saldiert)** | W | `max(0, Summe aller Phasenleistungen)` |
+| **Netzeinspeisung Leistung (saldiert)** | W | `max(0, −Summe aller Phasenleistungen)` |
+| **Netzbezug Energie (saldiert)** | kWh | die Bezugsleistung, über die Zeit integriert |
+| **Netzeinspeisung Energie (saldiert)** | kWh | die Einspeiseleistung, über die Zeit integriert |
 
-Sie werden aus der bereits saldierten, vorzeichenbehafteten Leistung berechnet und verhalten
-sich damit wie ein saldierender Zähler. Aus den kumulierten Zählerständen lässt sich die
-Saldierung **nicht** nachträglich reparieren — sie muss im Moment der Messung geschehen.
-Darum bleiben die Roh-Energieregister unverändert so, wie das Gerät sie meldet.
+Die Leistungssensoren stammen aus der bereits saldierten, vorzeichenbehafteten Leistung und
+verhalten sich damit wie ein saldierender Zähler. Die beiden Energiezähler integrieren sie
+nach der Trapez-Regel — dieselbe Methode, die auch der Riemann-Helfer von Home Assistant
+verwendet. Sie können also direkt ins Energie-Dashboard unter **Netzbezug** und
+**Einspeisung ins Netz**.
 
-**Für korrekte kWh** werden die beiden Sensoren über die Zeit integriert. In Home Assistant
-unter **Einstellungen → Geräte & Dienste → Helfer → Helfer erstellen → Integral-Sensor
-(Riemann-Summe)** je einen anlegen:
+Die Zählerstände überstehen Neustarts von Home Assistant. Liegen zwei Messungen mehr als
+15 Minuten auseinander oder schlägt eine fehl, wird die Kette unterbrochen statt darüber
+hinweg integriert — ein Ausfall kann so keine Energie erfinden.
 
-| Einstellung | Wert |
-|---|---|
-| Eingangssensor | *Netzbezug Leistung (saldiert)* bzw. *Netzeinspeisung Leistung (saldiert)* |
-| Integrationsmethode | **Trapez-Regel** |
-| Metrisches Präfix | **k** (Kilo) |
-| Zeiteinheit | Stunden |
+**Sie starten bei null.** Vergangene Energie lässt sich nicht rekonstruieren: Die
+Gerätezähler haben nie saldiert, und diese Information ist aus ihnen nicht wiederherstellbar.
+Die geräteeigenen Sensoren `Gesamte Wirkenergie` laufen unverändert daneben weiter.
 
-Die beiden entstehenden `kWh`-Sensoren gehören ins Energie-Dashboard unter **Netzbezug** und
-**Einspeisung ins Netz** — nicht die geräteeigenen Energiesensoren.
-
-Ein kürzeres Intervall für schnelle Werte (1–2 s) erhöht die Genauigkeit dieser Integration,
-weil die Leistung häufiger abgetastet wird. Siehe
+Ein kürzeres Intervall für schnelle Werte tastet die Leistung häufiger ab und macht die
+Zähler genauer; 1–2 s sind sinnvoll. Siehe
 [Abfrageintervalle](#3-abfrageintervalle-einstellen).
 
 ### Energie-Dashboard

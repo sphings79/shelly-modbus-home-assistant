@@ -219,6 +219,10 @@ setting.
 | Neutral Current | A | current | — |
 | Total Active Energy | kWh | energy | ✅ |
 | Total Active Returned Energy | kWh | energy | ✅ |
+| Grid Import Power (netted) | W | power | ✅ |
+| Grid Export Power (netted) | W | power | ✅ |
+| Grid Import Energy (netted) | kWh | energy | ✅ |
+| Grid Export Energy (netted) | kWh | energy | ✅ |
 | Phase A/B/C Active Energy | kWh | energy | ✅ |
 | Phase A/B/C Active Returned Energy | kWh | energy | ✅ |
 | Meter / overvoltage / overcurrent / overpower errors | — | problem | — |
@@ -251,34 +255,30 @@ The classic case — solar exporting on one phase while the house draws on the o
 Verified on a Pro 3EM: `total_act_power` (register 31013) **is** correctly netted, but
 `total_act_energy` (31162) is merely the sum of the per-phase counters.
 
-Because of this, the integration provides two extra sensors on three-phase meters:
+Because of this, three-phase meters get four extra sensors — **no helpers to set up**:
 
-| Entity | Meaning |
-|---|---|
-| **Grid Import Power (netted)** | `max(0, sum of all phase powers)` |
-| **Grid Export Power (netted)** | `max(0, −sum of all phase powers)` |
+| Entity | Unit | Meaning |
+|---|---|---|
+| **Grid Import Power (netted)** | W | `max(0, sum of all phase powers)` |
+| **Grid Export Power (netted)** | W | `max(0, −sum of all phase powers)` |
+| **Grid Import Energy (netted)** | kWh | the import power, integrated over time |
+| **Grid Export Energy (netted)** | kWh | the export power, integrated over time |
 
-These are computed from the already-netted signed power, so they behave like a netting
-meter. Netting cannot be repaired after the fact from the accumulated counters — it has to
-happen at the moment of measurement — which is why the raw energy registers stay as the
-device reports them.
+The power sensors come from the already-netted signed power, so they behave like a netting
+meter. The two energy counters integrate them with the trapezoidal rule — the same method
+Home Assistant's Riemann sum helper uses — so you can put them straight into the energy
+dashboard under **Grid consumption** and **Return to grid**.
 
-**To get correct kWh**, integrate the two sensors over time. In Home Assistant, go to
-**Settings → Devices & Services → Helpers → Create helper → Integration - Riemann sum**
-and add one for each:
+The counters survive Home Assistant restarts. Readings more than 15 minutes apart, or a
+reading that fails, break the chain instead of being integrated across, so a dropout cannot
+invent energy.
 
-| Setting | Value |
-|---|---|
-| Input sensor | *Grid Import Power (netted)* / *Grid Export Power (netted)* |
-| Integration method | **Trapezoidal rule** |
-| Metric prefix | **k** (kilo) |
-| Time unit | Hours |
+**They start at zero.** Past energy cannot be reconstructed: the device's counters never
+netted, and that information is not recoverable from them. The device's own
+`Total Active Energy` sensors keep running unchanged next to them.
 
-The two resulting `kWh` sensors are what belongs in the energy dashboard under **Grid
-consumption** and **Return to grid** — not the device's own energy sensors.
-
-Lowering the fast polling interval to 1–2 s improves the accuracy of this integration,
-since it samples power more often. See [polling intervals](#3-tune-the-polling-intervals).
+A shorter fast interval samples power more often and makes the counters more accurate;
+1–2 s is reasonable. See [polling intervals](#3-tune-the-polling-intervals).
 
 ### Energy dashboard
 

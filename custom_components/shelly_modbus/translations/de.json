@@ -269,6 +269,12 @@
       },
       "grid_export_power": {
         "name": "Netzeinspeisung Leistung (saldiert)"
+      },
+      "grid_import_energy": {
+        "name": "Netzbezug Energie (saldiert)"
+      },
+      "grid_export_energy": {
+        "name": "Netzeinspeisung Energie (saldiert)"
       }
     },
     "binary_sensor": {

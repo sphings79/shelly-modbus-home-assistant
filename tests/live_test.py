@@ -187,7 +187,9 @@ async def check(host: str) -> bool:
         f"{failed_blocks} failed blocks"
     )
 
-    register_defs = [d for d in definitions if d.get("access") != "derived"]
+    register_defs = [
+        d for d in definitions if d.get("access") not in ("derived", "integrated")
+    ]
     decoded = sum(1 for d in register_defs if values.get(d["key"]) is not None)
     print(f"  decoded {decoded}/{len(register_defs)} registers")
 

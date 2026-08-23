@@ -163,7 +163,7 @@ def _netted_definitions(instances: list[dict[str, Any]]) -> list[dict[str, Any]]
         "category": None,
     }
 
-    return [
+    definitions = [
         {
             **shared,
             "key": "grid_import_power",
@@ -183,6 +183,52 @@ def _netted_definitions(instances: list[dict[str, Any]]) -> list[dict[str, Any]]
             "sign": "negative",
         },
     ]
+
+    # Energy counters integrated from the two power sensors above, so the user
+    # gets dashboard-ready kWh without wiring up a Riemann sum helper by hand.
+    # These start at zero when the integration is first set up: past energy
+    # cannot be reconstructed, because the device's own counters never netted.
+    energy_meta = {
+        "component": "grid",
+        "component_id": 0,
+        "instance_label": None,
+        "translation_placeholders": None,
+        "data_type": "float",
+        "platform": "sensor",
+        "access": "integrated",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+        "precision": 3,
+        "enabled_by_default": True,
+        "scan_interval": SCAN_INTERVAL_HIGH,
+        "scale": None,
+        "category": None,
+        "sources": sources,
+    }
+
+    definitions += [
+        {
+            **energy_meta,
+            "key": "grid_import_energy",
+            "field": "grid_import_energy",
+            "translation_key": "grid_import_energy",
+            "name": "Grid Import Energy (netted)",
+            "icon": "mdi:transmission-tower-export",
+            "source": "grid_import_power",
+        },
+        {
+            **energy_meta,
+            "key": "grid_export_energy",
+            "field": "grid_export_energy",
+            "translation_key": "grid_export_energy",
+            "name": "Grid Export Energy (netted)",
+            "icon": "mdi:transmission-tower-import",
+            "source": "grid_export_power",
+        },
+    ]
+
+    return definitions
 
 
 def _expand_instance(

@@ -204,23 +204,37 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
                 if entry.unique_id.startswith(prefix):
                     disabled.add(entry.unique_id[len(prefix) :])
 
-        # A derived sensor needs its sources read even when the source entity
-        # itself is disabled, otherwise disabling the raw phase power would
-        # silently break the netted sensors.
+        def is_live(definition: dict[str, Any]) -> bool:
+            """True when an enabled entity depends on this definition."""
+            key = definition["key"]
+            if key in disabled:
+                return False
+            return not self._registered_keys or key in self._registered_keys
+
+        # Work out which computed values are actually needed. An energy counter
+        # keeps needing its power sensor even when that one is disabled, and a
+        # netted power sensor keeps needing the raw phase registers - otherwise
+        # disabling an entity would silently break the ones built on top of it.
+        needed_derived: set[str] = set()
+        for definition in self.definitions:
+            if not is_live(definition):
+                continue
+            if definition.get("access") == "derived":
+                needed_derived.add(definition["key"])
+            elif definition.get("access") == "integrated":
+                needed_derived.add(definition["source"])
+
         required: set[str] = set()
         for definition in self.definitions:
             if definition.get("access") != "derived":
                 continue
-            if definition["key"] in disabled:
-                continue
-            if self._registered_keys and definition["key"] not in self._registered_keys:
-                continue
-            required.update(definition["sources"])
+            if definition["key"] in needed_derived:
+                required.update(definition["sources"])
 
         selected = []
         for definition in self.definitions:
-            if definition.get("access") == "derived":
-                # Computed after the reads, never fetched over Modbus.
+            if definition.get("access") in ("derived", "integrated"):
+                # Computed from other values, never fetched over Modbus.
                 continue
             if definition["scan_interval"] not in categories:
                 continue
