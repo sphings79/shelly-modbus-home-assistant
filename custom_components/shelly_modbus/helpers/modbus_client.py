@@ -126,7 +126,15 @@ class ShellyModbusClient:
     ) -> None:
         self.host = host
         self.port = port
-        self.timeout = timeout
+
+        try:
+            self.timeout = float(timeout)
+            if self.timeout <= 0:
+                raise ValueError
+        except (TypeError, ValueError):
+            # pymodbus reads a missing timeout as "wait forever", which turns
+            # one unanswered request into a hanging poll cycle.
+            self.timeout = float(DEFAULT_TIMEOUT)
 
         try:
             self.unit_id = int(unit_id)
@@ -137,6 +145,12 @@ class ShellyModbusClient:
             self.message_wait_sec = max(0.0, float(message_wait_ms) / 1000.0)
         except (TypeError, ValueError):
             self.message_wait_sec = DEFAULT_MESSAGE_WAIT_MS / 1000.0
+
+        # All attempts of one request share this budget. A single attempt can
+        # cost up to two timeouts (reconnect plus read), so three leaves room
+        # for one full reconnect without letting a dead device run away with
+        # retries x (connect + read).
+        self._request_budget = self.timeout * 3
 
         self.client: AsyncModbusTcpClient | None = None
         # Serialises requests so concurrent reads cannot collide on
@@ -260,9 +274,37 @@ class ShellyModbusClient:
                 self._last_finished_at = asyncio.get_running_loop().time()
 
     async def _request(self, call_name: str, retries: int, **kwargs: Any):
-        """Run a call with retries, reconnecting between attempts."""
+        """Run a call with retries, reconnecting between attempts.
+
+        The attempts share one deadline. A device that accepts the connection
+        but never answers would otherwise cost ``retries`` x (connect + read) —
+        half a minute for a single block, which stalls the poll cycle and,
+        during the first refresh, the config entry setup.
+        """
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + self._request_budget
+
         for attempt in range(retries):
-            result = await self._execute(call_name, **kwargs)
+            remaining = deadline - loop.time()
+            if remaining <= 0:
+                _LOGGER.debug(
+                    "Giving up on %s after %d attempt(s): request budget spent",
+                    call_name,
+                    attempt,
+                )
+                break
+
+            try:
+                result = await asyncio.wait_for(
+                    self._execute(call_name, **kwargs), remaining
+                )
+            except TimeoutError:
+                # The request was cancelled mid-flight, so the transaction is
+                # half-done and the socket unusable for the next one.
+                _LOGGER.debug("%s exceeded the request budget", call_name)
+                await self._discard_client()
+                break
+
             if result is not None and not result.isError():
                 return result
 

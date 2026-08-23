@@ -6,16 +6,13 @@ cloud and without the HTTP/RPC API.
 
 from __future__ import annotations
 
-import logging
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryError
 
 from .const import DOMAIN, PLATFORMS
 from .coordinator import ShellyModbusCoordinator
 from .registers import preload
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -27,18 +24,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator = ShellyModbusCoordinator(hass, entry)
 
     if not coordinator.definitions:
-        _LOGGER.error(
-            "No register definitions for model '%s'; remove and re-add the device",
-            entry.data.get("model"),
+        # Retrying cannot conjure up a register map; this needs the user.
+        raise ConfigEntryError(
+            f"No register definitions for model '{entry.data.get('model')}'; "
+            "remove and re-add the device"
         )
-        return False
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
-    # Connect before the first refresh so failures surface as a retry rather
-    # than as a pile of unavailable entities.
-    await coordinator.async_init()
-    await coordinator.async_config_entry_first_refresh()
+    try:
+        # Connect before the first refresh so failures surface as a retry rather
+        # than as a pile of unavailable entities.
+        await coordinator.async_init()
+        await coordinator.async_config_entry_first_refresh()
+    except Exception:
+        # The first refresh raises ConfigEntryNotReady when the device does not
+        # answer. Without this the coordinator would stay in hass.data with the
+        # socket async_init opened, leaking one of each per setup retry.
+        await coordinator.async_close()
+        hass.data[DOMAIN].pop(entry.entry_id, None)
+        raise
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 

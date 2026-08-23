@@ -12,7 +12,7 @@
   "requirements": [
     "pymodbus>=3.9.2"
   ],
-  "version": "1.1.1",
+  "version": "1.1.2",
   "zeroconf": [
     "_shelly._tcp.local."
   ]

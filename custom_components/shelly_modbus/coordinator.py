@@ -20,6 +20,7 @@ from .const import (
     CONF_UNIT_ID,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVALS,
+    DEFAULT_TIMEOUT,
     DEFAULT_UNIT_ID,
     DOMAIN,
     MANUFACTURER,
@@ -61,7 +62,7 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
             host=self.host,
             port=self.port,
             unit_id=entry.data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID),
-            timeout=entry.data.get("timeout", 5),
+            timeout=entry.data.get("timeout", DEFAULT_TIMEOUT),
         )
 
         self.definitions: list[dict[str, Any]] = expand_definitions(
@@ -248,6 +249,9 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
         blocks = build_blocks(definitions)
         read_any = False
         failures = 0
+        # Set once the device stopped answering entirely, as opposed to
+        # rejecting one particular block with an exception response.
+        unreachable = False
 
         for block in blocks:
             start = block[0]["address"]
@@ -256,6 +260,16 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
 
             if registers is None:
                 failures += 1
+                if not self.client.is_connected:
+                    # Every remaining read would spend its own retry budget to
+                    # learn the same thing. Stop and let the next cycle try.
+                    _LOGGER.debug(
+                        "Connection lost at block %d..%d, ending the cycle early",
+                        start,
+                        end - 1,
+                    )
+                    unreachable = True
+                    break
                 continue
 
             read_any = True
@@ -266,6 +280,8 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
 
         # Coils and discrete inputs are single-bit reads.
         for definition in definitions:
+            if unreachable:
+                break
             access = definition.get("access")
             if access == "discrete_input":
                 value = await self.client.async_read_discrete_input(
@@ -273,6 +289,8 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
                 )
                 if value is None:
                     failures += 1
+                    if not self.client.is_connected:
+                        unreachable = True
                 else:
                     read_any = True
                     data[definition["key"]] = value
