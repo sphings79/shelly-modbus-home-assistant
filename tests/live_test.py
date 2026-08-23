@@ -132,6 +132,38 @@ async def check(host: str) -> bool:
     finally:
         await client.async_close()
 
+    # Derived sensors are computed from the values just read, exactly as the
+    # coordinator does, so the netting logic is exercised against real readings.
+    netted_ok = True
+    for definition in definitions:
+        if definition.get("access") != "derived":
+            continue
+        parts = [values.get(src) for src in definition["sources"]]
+        if any(p is None for p in parts):
+            values[definition["key"]] = None
+            continue
+        total = sum(parts)
+        values[definition["key"]] = (
+            max(total, 0.0) if definition["sign"] == "positive" else max(-total, 0.0)
+        )
+
+    if "grid_import_power" in values and "grid_export_power" in values:
+        imp, exp = values["grid_import_power"], values["grid_export_power"]
+        signed = (
+            sum(
+                values.get(src, 0.0)
+                for d in definitions
+                if d.get("access") == "derived"
+                for src in d["sources"]
+            )
+            / 2
+        )  # both sensors share the same sources
+        netted_ok = abs((imp - exp) - signed) < 0.01
+        print(
+            f"  netted: import={imp:.2f} W export={exp:.2f} W "
+            f"(signed total {signed:.2f} W) -> {'OK' if netted_ok else 'MISMATCH'}"
+        )
+
     reference = reference_values(host)
 
     compared = mismatched = 0
@@ -155,10 +187,17 @@ async def check(host: str) -> bool:
         f"{failed_blocks} failed blocks"
     )
 
-    decoded = sum(1 for v in values.values() if v is not None)
-    print(f"  decoded {decoded}/{len(definitions)} registers")
+    register_defs = [d for d in definitions if d.get("access") != "derived"]
+    decoded = sum(1 for d in register_defs if values.get(d["key"]) is not None)
+    print(f"  decoded {decoded}/{len(register_defs)} registers")
 
-    return mismatched == 0 and failed_blocks == 0 and identity_ok and compared > 0
+    return (
+        mismatched == 0
+        and failed_blocks == 0
+        and identity_ok
+        and compared > 0
+        and netted_ok
+    )
 
 
 async def main() -> int:
