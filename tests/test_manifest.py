@@ -24,6 +24,21 @@ def test_manifest_is_complete():
     assert manifest["iot_class"] == "local_polling"
 
 
+def test_manifest_keys_are_sorted():
+    """hassfest requires: domain, name, then the rest alphabetically."""
+    manifest = json.loads((COMPONENT / "manifest.json").read_text())
+    keys = list(manifest)
+    assert keys[:2] == ["domain", "name"]
+    assert keys[2:] == sorted(keys[2:])
+
+
+def test_brand_assets_exist():
+    """HACS rejects an integration without brand assets or a brands entry."""
+    brand = COMPONENT / "brand"
+    for name in ("icon.png", "logo.png"):
+        assert (brand / name).is_file(), f"missing brand asset {name}"
+
+
 def test_hacs_manifest_exists():
     hacs = json.loads((ROOT / "hacs.json").read_text())
     assert hacs["name"]
