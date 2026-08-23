@@ -1,0 +1,354 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Shelly device",
+        "description": "Enter the address of a Shelly device with Modbus-TCP enabled. Enable it in the device web interface under Settings → Modbus.",
+        "data": {
+          "host": "Host or IP address",
+          "port": "Port",
+          "unit_id": "Modbus unit ID"
+        }
+      },
+      "model": {
+        "title": "Select model",
+        "description": "The device reported “{detected}”. Confirm the model and measuring profile, or pick a different one if the detection was wrong.",
+        "data": {
+          "model": "Model",
+          "profile": "Measuring profile"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot reach the device on this address. Check that Modbus-TCP is enabled in the device settings.",
+      "no_components": "Connected, but the device did not expose any known Modbus components.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This device is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Shelly Modbus options",
+        "description": "Polling intervals per category. Fast values are power, voltage and current; slow values are energy counters and error flags.",
+        "data": {
+          "scan_interval_high": "Fast values interval (seconds)",
+          "scan_interval_low": "Slow values interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "mac": {
+        "name": "MAC Address"
+      },
+      "model": {
+        "name": "Model"
+      },
+      "device_name": {
+        "name": "Device Name"
+      },
+      "em_timestamp": {
+        "name": "Last Update"
+      },
+      "em_n_current": {
+        "name": "Neutral Current"
+      },
+      "em_total_current": {
+        "name": "Total Current"
+      },
+      "em_total_act_power": {
+        "name": "Total Active Power"
+      },
+      "em_total_aprt_power": {
+        "name": "Total Apparent Power"
+      },
+      "em_a_voltage": {
+        "name": "Phase A Voltage"
+      },
+      "em_a_current": {
+        "name": "Phase A Current"
+      },
+      "em_a_act_power": {
+        "name": "Phase A Active Power"
+      },
+      "em_a_aprt_power": {
+        "name": "Phase A Apparent Power"
+      },
+      "em_a_pf": {
+        "name": "Phase A Power Factor"
+      },
+      "em_a_freq": {
+        "name": "Phase A Frequency"
+      },
+      "em_b_voltage": {
+        "name": "Phase B Voltage"
+      },
+      "em_b_current": {
+        "name": "Phase B Current"
+      },
+      "em_b_act_power": {
+        "name": "Phase B Active Power"
+      },
+      "em_b_aprt_power": {
+        "name": "Phase B Apparent Power"
+      },
+      "em_b_pf": {
+        "name": "Phase B Power Factor"
+      },
+      "em_b_freq": {
+        "name": "Phase B Frequency"
+      },
+      "em_c_voltage": {
+        "name": "Phase C Voltage"
+      },
+      "em_c_current": {
+        "name": "Phase C Current"
+      },
+      "em_c_act_power": {
+        "name": "Phase C Active Power"
+      },
+      "em_c_aprt_power": {
+        "name": "Phase C Apparent Power"
+      },
+      "em_c_pf": {
+        "name": "Phase C Power Factor"
+      },
+      "em_c_freq": {
+        "name": "Phase C Frequency"
+      },
+      "emdata_timestamp": {
+        "name": "Energy Last Update"
+      },
+      "emdata_total_act_energy": {
+        "name": "Total Active Energy"
+      },
+      "emdata_total_act_ret_energy": {
+        "name": "Total Active Returned Energy"
+      },
+      "emdata_a_total_act_energy_period": {
+        "name": "Phase A Active Energy (Period)"
+      },
+      "emdata_a_fund_act_energy_period": {
+        "name": "Phase A Fundamental Active Energy (Period)"
+      },
+      "emdata_a_total_act_ret_energy_period": {
+        "name": "Phase A Active Returned Energy (Period)"
+      },
+      "emdata_a_fund_act_ret_energy_period": {
+        "name": "Phase A Fundamental Active Returned Energy (Period)"
+      },
+      "emdata_a_lagging_react_energy": {
+        "name": "Phase A Lagging Reactive Energy"
+      },
+      "emdata_a_leading_react_energy": {
+        "name": "Phase A Leading Reactive Energy"
+      },
+      "emdata_a_total_act_energy": {
+        "name": "Phase A Active Energy"
+      },
+      "emdata_a_total_act_ret_energy": {
+        "name": "Phase A Active Returned Energy"
+      },
+      "emdata_b_total_act_energy_period": {
+        "name": "Phase B Active Energy (Period)"
+      },
+      "emdata_b_fund_act_energy_period": {
+        "name": "Phase B Fundamental Active Energy (Period)"
+      },
+      "emdata_b_total_act_ret_energy_period": {
+        "name": "Phase B Active Returned Energy (Period)"
+      },
+      "emdata_b_fund_act_ret_energy_period": {
+        "name": "Phase B Fundamental Active Returned Energy (Period)"
+      },
+      "emdata_b_lagging_react_energy": {
+        "name": "Phase B Lagging Reactive Energy"
+      },
+      "emdata_b_leading_react_energy": {
+        "name": "Phase B Leading Reactive Energy"
+      },
+      "emdata_b_total_act_energy": {
+        "name": "Phase B Active Energy"
+      },
+      "emdata_b_total_act_ret_energy": {
+        "name": "Phase B Active Returned Energy"
+      },
+      "emdata_c_total_act_energy_period": {
+        "name": "Phase C Active Energy (Period)"
+      },
+      "emdata_c_fund_act_energy_period": {
+        "name": "Phase C Fundamental Active Energy (Period)"
+      },
+      "emdata_c_total_act_ret_energy_period": {
+        "name": "Phase C Active Returned Energy (Period)"
+      },
+      "emdata_c_fund_act_ret_energy_period": {
+        "name": "Phase C Fundamental Active Returned Energy (Period)"
+      },
+      "emdata_c_lagging_react_energy": {
+        "name": "Phase C Lagging Reactive Energy"
+      },
+      "emdata_c_leading_react_energy": {
+        "name": "Phase C Leading Reactive Energy"
+      },
+      "emdata_c_total_act_energy": {
+        "name": "Phase C Active Energy"
+      },
+      "emdata_c_total_act_ret_energy": {
+        "name": "Phase C Active Returned Energy"
+      },
+      "em1_timestamp": {
+        "name": "Channel {idx} Last Update"
+      },
+      "em1_voltage": {
+        "name": "Channel {idx} Voltage"
+      },
+      "em1_current": {
+        "name": "Channel {idx} Current"
+      },
+      "em1_act_power": {
+        "name": "Channel {idx} Active Power"
+      },
+      "em1_aprt_power": {
+        "name": "Channel {idx} Apparent Power"
+      },
+      "em1_pf": {
+        "name": "Channel {idx} Power Factor"
+      },
+      "em1_freq": {
+        "name": "Channel {idx} Frequency"
+      },
+      "em1data_timestamp": {
+        "name": "Channel {idx} Energy Last Update"
+      },
+      "em1data_total_act_energy_period": {
+        "name": "Channel {idx} Active Energy (Period)"
+      },
+      "em1data_total_act_ret_energy_period": {
+        "name": "Channel {idx} Active Returned Energy (Period)"
+      },
+      "em1data_lagging_react_energy": {
+        "name": "Channel {idx} Lagging Reactive Energy"
+      },
+      "em1data_leading_react_energy": {
+        "name": "Channel {idx} Leading Reactive Energy"
+      },
+      "em1data_total_act_energy": {
+        "name": "Channel {idx} Active Energy"
+      },
+      "em1data_total_act_ret_energy": {
+        "name": "Channel {idx} Active Returned Energy"
+      },
+      "switch_voltage": {
+        "name": "Switch {idx} Voltage"
+      },
+      "switch_current": {
+        "name": "Switch {idx} Current"
+      },
+      "switch_act_power": {
+        "name": "Switch {idx} Active Power"
+      },
+      "switch_freq": {
+        "name": "Switch {idx} Frequency"
+      },
+      "switch_pf": {
+        "name": "Switch {idx} Power Factor"
+      },
+      "switch_act_energy": {
+        "name": "Switch {idx} Active Energy"
+      },
+      "switch_act_ret_energy": {
+        "name": "Switch {idx} Active Returned Energy"
+      }
+    },
+    "binary_sensor": {
+      "em_a_meter_error": {
+        "name": "Phase A Meter Error"
+      },
+      "em_b_meter_error": {
+        "name": "Phase B Meter Error"
+      },
+      "em_c_meter_error": {
+        "name": "Phase C Meter Error"
+      },
+      "em_n_meter_error": {
+        "name": "Neutral Meter Error"
+      },
+      "em_phase_sequence_error": {
+        "name": "Phase Sequence Error"
+      },
+      "em_n_current_mismatch": {
+        "name": "Neutral Current Mismatch"
+      },
+      "em_n_overcurrent_error": {
+        "name": "Neutral Overcurrent"
+      },
+      "em_a_overpower_error": {
+        "name": "Phase A Overpower"
+      },
+      "em_a_overvoltage_error": {
+        "name": "Phase A Overvoltage"
+      },
+      "em_a_overcurrent_error": {
+        "name": "Phase A Overcurrent"
+      },
+      "em_b_overpower_error": {
+        "name": "Phase B Overpower"
+      },
+      "em_b_overvoltage_error": {
+        "name": "Phase B Overvoltage"
+      },
+      "em_b_overcurrent_error": {
+        "name": "Phase B Overcurrent"
+      },
+      "em_c_overpower_error": {
+        "name": "Phase C Overpower"
+      },
+      "em_c_overvoltage_error": {
+        "name": "Phase C Overvoltage"
+      },
+      "em_c_overcurrent_error": {
+        "name": "Phase C Overcurrent"
+      },
+      "em1_error": {
+        "name": "Channel {idx} Meter Error"
+      },
+      "em1_overpower_error": {
+        "name": "Channel {idx} Overpower"
+      },
+      "em1_overvoltage_error": {
+        "name": "Channel {idx} Overvoltage"
+      },
+      "em1_overcurrent_error": {
+        "name": "Channel {idx} Overcurrent"
+      },
+      "switch_undervoltage_error": {
+        "name": "Switch {idx} Undervoltage"
+      },
+      "switch_overvoltage_error": {
+        "name": "Switch {idx} Overvoltage"
+      },
+      "switch_overcurrent_error": {
+        "name": "Switch {idx} Overcurrent"
+      },
+      "switch_overpower_error": {
+        "name": "Switch {idx} Overpower"
+      },
+      "input_state": {
+        "name": "Input {idx} State"
+      },
+      "modbus_connection": {
+        "name": "Modbus Connection"
+      }
+    },
+    "switch": {
+      "switch_output": {
+        "name": "Switch {idx} Output"
+      }
+    }
+  }
+}

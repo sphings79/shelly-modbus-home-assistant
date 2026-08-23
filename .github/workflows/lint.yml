@@ -1,0 +1,45 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ruff:
+    name: Ruff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install ruff
+      - name: Lint
+        run: ruff check custom_components tests
+      - name: Format check
+        run: ruff format --check custom_components tests
+
+  yaml:
+    name: Register maps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install pyyaml
+      - name: Validate YAML register definitions
+        run: |
+          python - <<'PY'
+          import sys, yaml
+          from pathlib import Path
+          for path in Path("custom_components/shelly_modbus/registers").glob("*.yaml"):
+              try:
+                  yaml.safe_load(path.read_text())
+                  print(f"OK  {path}")
+              except yaml.YAMLError as err:
+                  print(f"FAIL {path}: {err}")
+                  sys.exit(1)
+          PY

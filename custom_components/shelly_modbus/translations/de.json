@@ -1,0 +1,354 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Shelly-Gerät verbinden",
+        "description": "Adresse eines Shelly-Geräts mit aktiviertem Modbus-TCP eingeben. Aktivieren lässt sich Modbus in der Weboberfläche des Geräts unter Einstellungen → Modbus.",
+        "data": {
+          "host": "Host oder IP-Adresse",
+          "port": "Port",
+          "unit_id": "Modbus-Unit-ID"
+        }
+      },
+      "model": {
+        "title": "Modell auswählen",
+        "description": "Das Gerät meldet „{detected}“. Modell und Messprofil bestätigen oder ein anderes wählen, falls die Erkennung nicht passt.",
+        "data": {
+          "model": "Modell",
+          "profile": "Messprofil"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Gerät unter dieser Adresse nicht erreichbar. Prüfen, ob Modbus-TCP in den Geräteeinstellungen aktiviert ist.",
+      "no_components": "Verbindung steht, aber das Gerät stellt keine bekannten Modbus-Komponenten bereit.",
+      "unknown": "Unerwarteter Fehler."
+    },
+    "abort": {
+      "already_configured": "Dieses Gerät ist bereits eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Shelly-Modbus-Optionen",
+        "description": "Abfrageintervalle je Kategorie. Schnelle Werte sind Leistung, Spannung und Strom; langsame Werte sind Energiezähler und Fehlermeldungen.",
+        "data": {
+          "scan_interval_high": "Intervall schnelle Werte (Sekunden)",
+          "scan_interval_low": "Intervall langsame Werte (Sekunden)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "mac": {
+        "name": "MAC-Adresse"
+      },
+      "model": {
+        "name": "Modell"
+      },
+      "device_name": {
+        "name": "Gerätename"
+      },
+      "em_timestamp": {
+        "name": "Zuletzt aktualisiert"
+      },
+      "em_n_current": {
+        "name": "Neutralleiterstrom"
+      },
+      "em_total_current": {
+        "name": "Gesamtstrom"
+      },
+      "em_total_act_power": {
+        "name": "Gesamte Wirkleistung"
+      },
+      "em_total_aprt_power": {
+        "name": "Gesamte Scheinleistung"
+      },
+      "em_a_voltage": {
+        "name": "Phase A Spannung"
+      },
+      "em_a_current": {
+        "name": "Phase A Strom"
+      },
+      "em_a_act_power": {
+        "name": "Phase A Wirkleistung"
+      },
+      "em_a_aprt_power": {
+        "name": "Phase A Scheinleistung"
+      },
+      "em_a_pf": {
+        "name": "Phase A Leistungsfaktor"
+      },
+      "em_a_freq": {
+        "name": "Phase A Frequenz"
+      },
+      "em_b_voltage": {
+        "name": "Phase B Spannung"
+      },
+      "em_b_current": {
+        "name": "Phase B Strom"
+      },
+      "em_b_act_power": {
+        "name": "Phase B Wirkleistung"
+      },
+      "em_b_aprt_power": {
+        "name": "Phase B Scheinleistung"
+      },
+      "em_b_pf": {
+        "name": "Phase B Leistungsfaktor"
+      },
+      "em_b_freq": {
+        "name": "Phase B Frequenz"
+      },
+      "em_c_voltage": {
+        "name": "Phase C Spannung"
+      },
+      "em_c_current": {
+        "name": "Phase C Strom"
+      },
+      "em_c_act_power": {
+        "name": "Phase C Wirkleistung"
+      },
+      "em_c_aprt_power": {
+        "name": "Phase C Scheinleistung"
+      },
+      "em_c_pf": {
+        "name": "Phase C Leistungsfaktor"
+      },
+      "em_c_freq": {
+        "name": "Phase C Frequenz"
+      },
+      "emdata_timestamp": {
+        "name": "Energie zuletzt aktualisiert"
+      },
+      "emdata_total_act_energy": {
+        "name": "Gesamte Wirkenergie"
+      },
+      "emdata_total_act_ret_energy": {
+        "name": "Gesamte eingespeiste Wirkenergie"
+      },
+      "emdata_a_total_act_energy_period": {
+        "name": "Phase A Wirkenergie (Periode)"
+      },
+      "emdata_a_fund_act_energy_period": {
+        "name": "Phase A Grundschwingungs-Wirkenergie (Periode)"
+      },
+      "emdata_a_total_act_ret_energy_period": {
+        "name": "Phase A Eingespeiste Wirkenergie (Periode)"
+      },
+      "emdata_a_fund_act_ret_energy_period": {
+        "name": "Phase A Grundschwingungs-Einspeiseenergie (Periode)"
+      },
+      "emdata_a_lagging_react_energy": {
+        "name": "Phase A Induktive Blindenergie"
+      },
+      "emdata_a_leading_react_energy": {
+        "name": "Phase A Kapazitive Blindenergie"
+      },
+      "emdata_a_total_act_energy": {
+        "name": "Phase A Wirkenergie"
+      },
+      "emdata_a_total_act_ret_energy": {
+        "name": "Phase A Eingespeiste Wirkenergie"
+      },
+      "emdata_b_total_act_energy_period": {
+        "name": "Phase B Wirkenergie (Periode)"
+      },
+      "emdata_b_fund_act_energy_period": {
+        "name": "Phase B Grundschwingungs-Wirkenergie (Periode)"
+      },
+      "emdata_b_total_act_ret_energy_period": {
+        "name": "Phase B Eingespeiste Wirkenergie (Periode)"
+      },
+      "emdata_b_fund_act_ret_energy_period": {
+        "name": "Phase B Grundschwingungs-Einspeiseenergie (Periode)"
+      },
+      "emdata_b_lagging_react_energy": {
+        "name": "Phase B Induktive Blindenergie"
+      },
+      "emdata_b_leading_react_energy": {
+        "name": "Phase B Kapazitive Blindenergie"
+      },
+      "emdata_b_total_act_energy": {
+        "name": "Phase B Wirkenergie"
+      },
+      "emdata_b_total_act_ret_energy": {
+        "name": "Phase B Eingespeiste Wirkenergie"
+      },
+      "emdata_c_total_act_energy_period": {
+        "name": "Phase C Wirkenergie (Periode)"
+      },
+      "emdata_c_fund_act_energy_period": {
+        "name": "Phase C Grundschwingungs-Wirkenergie (Periode)"
+      },
+      "emdata_c_total_act_ret_energy_period": {
+        "name": "Phase C Eingespeiste Wirkenergie (Periode)"
+      },
+      "emdata_c_fund_act_ret_energy_period": {
+        "name": "Phase C Grundschwingungs-Einspeiseenergie (Periode)"
+      },
+      "emdata_c_lagging_react_energy": {
+        "name": "Phase C Induktive Blindenergie"
+      },
+      "emdata_c_leading_react_energy": {
+        "name": "Phase C Kapazitive Blindenergie"
+      },
+      "emdata_c_total_act_energy": {
+        "name": "Phase C Wirkenergie"
+      },
+      "emdata_c_total_act_ret_energy": {
+        "name": "Phase C Eingespeiste Wirkenergie"
+      },
+      "em1_timestamp": {
+        "name": "Kanal {idx} Zuletzt aktualisiert"
+      },
+      "em1_voltage": {
+        "name": "Kanal {idx} Spannung"
+      },
+      "em1_current": {
+        "name": "Kanal {idx} Strom"
+      },
+      "em1_act_power": {
+        "name": "Kanal {idx} Wirkleistung"
+      },
+      "em1_aprt_power": {
+        "name": "Kanal {idx} Scheinleistung"
+      },
+      "em1_pf": {
+        "name": "Kanal {idx} Leistungsfaktor"
+      },
+      "em1_freq": {
+        "name": "Kanal {idx} Frequenz"
+      },
+      "em1data_timestamp": {
+        "name": "Kanal {idx} Energie zuletzt aktualisiert"
+      },
+      "em1data_total_act_energy_period": {
+        "name": "Kanal {idx} Wirkenergie (Periode)"
+      },
+      "em1data_total_act_ret_energy_period": {
+        "name": "Kanal {idx} Eingespeiste Wirkenergie (Periode)"
+      },
+      "em1data_lagging_react_energy": {
+        "name": "Kanal {idx} Induktive Blindenergie"
+      },
+      "em1data_leading_react_energy": {
+        "name": "Kanal {idx} Kapazitive Blindenergie"
+      },
+      "em1data_total_act_energy": {
+        "name": "Kanal {idx} Wirkenergie"
+      },
+      "em1data_total_act_ret_energy": {
+        "name": "Kanal {idx} Eingespeiste Wirkenergie"
+      },
+      "switch_voltage": {
+        "name": "Schalter {idx} Spannung"
+      },
+      "switch_current": {
+        "name": "Schalter {idx} Strom"
+      },
+      "switch_act_power": {
+        "name": "Schalter {idx} Wirkleistung"
+      },
+      "switch_freq": {
+        "name": "Schalter {idx} Frequenz"
+      },
+      "switch_pf": {
+        "name": "Schalter {idx} Leistungsfaktor"
+      },
+      "switch_act_energy": {
+        "name": "Schalter {idx} Wirkenergie"
+      },
+      "switch_act_ret_energy": {
+        "name": "Schalter {idx} Eingespeiste Wirkenergie"
+      }
+    },
+    "binary_sensor": {
+      "em_a_meter_error": {
+        "name": "Phase A Zählerfehler"
+      },
+      "em_b_meter_error": {
+        "name": "Phase B Zählerfehler"
+      },
+      "em_c_meter_error": {
+        "name": "Phase C Zählerfehler"
+      },
+      "em_n_meter_error": {
+        "name": "Neutralleiter-Zählerfehler"
+      },
+      "em_phase_sequence_error": {
+        "name": "Phasenfolgefehler"
+      },
+      "em_n_current_mismatch": {
+        "name": "Neutralleiterstrom-Abweichung"
+      },
+      "em_n_overcurrent_error": {
+        "name": "Neutralleiter-Überstrom"
+      },
+      "em_a_overpower_error": {
+        "name": "Phase A Überlast"
+      },
+      "em_a_overvoltage_error": {
+        "name": "Phase A Überspannung"
+      },
+      "em_a_overcurrent_error": {
+        "name": "Phase A Überstrom"
+      },
+      "em_b_overpower_error": {
+        "name": "Phase B Überlast"
+      },
+      "em_b_overvoltage_error": {
+        "name": "Phase B Überspannung"
+      },
+      "em_b_overcurrent_error": {
+        "name": "Phase B Überstrom"
+      },
+      "em_c_overpower_error": {
+        "name": "Phase C Überlast"
+      },
+      "em_c_overvoltage_error": {
+        "name": "Phase C Überspannung"
+      },
+      "em_c_overcurrent_error": {
+        "name": "Phase C Überstrom"
+      },
+      "em1_error": {
+        "name": "Kanal {idx} Zählerfehler"
+      },
+      "em1_overpower_error": {
+        "name": "Kanal {idx} Überlast"
+      },
+      "em1_overvoltage_error": {
+        "name": "Kanal {idx} Überspannung"
+      },
+      "em1_overcurrent_error": {
+        "name": "Kanal {idx} Überstrom"
+      },
+      "switch_undervoltage_error": {
+        "name": "Schalter {idx} Unterspannung"
+      },
+      "switch_overvoltage_error": {
+        "name": "Schalter {idx} Überspannung"
+      },
+      "switch_overcurrent_error": {
+        "name": "Schalter {idx} Überstrom"
+      },
+      "switch_overpower_error": {
+        "name": "Schalter {idx} Überlast"
+      },
+      "input_state": {
+        "name": "Eingang {idx} Status"
+      },
+      "modbus_connection": {
+        "name": "Modbus-Verbindung"
+      }
+    },
+    "switch": {
+      "switch_output": {
+        "name": "Schalter {idx} Ausgang"
+      }
+    }
+  }
+}

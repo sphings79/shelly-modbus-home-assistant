@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 470" width="1180" height="470" role="img" aria-label="How the integration reads a Shelly device">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#41BDF5"/>
+    </marker>
+    <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#3DDC97"/>
+    </marker>
+  </defs>
+  <style>
+    .box { fill:#16344C; stroke:#41BDF5; stroke-opacity:.5; stroke-width:2; }
+    .boxg { fill:#16344C; stroke:#3DDC97; stroke-opacity:.5; stroke-width:2; }
+    .t { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+    .h { font-size:17px; font-weight:700; fill:#F2F8FC; }
+    .s { font-size:13px; fill:#9FB6C6; }
+    .m { font-size:12px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; fill:#8FD6F7; }
+    .lbl { font-size:12px; font-weight:600; fill:#41BDF5; }
+  </style>
+
+  <rect width="1180" height="470" rx="16" fill="#0B1B2B"/>
+  <text x="40" y="46" class="t h" font-size="21">How a reading reaches Home Assistant</text>
+
+  <!-- Device -->
+  <rect x="40" y="86" width="230" height="150" rx="12" class="box"/>
+  <text x="60" y="116" class="t h">Shelly device</text>
+  <text x="60" y="142" class="t s">Modbus-TCP server, port 502</text>
+  <text x="60" y="166" class="t m">EM · EMData · EM1 · Switch</text>
+  <text x="60" y="192" class="t s">Enable under</text>
+  <text x="60" y="212" class="t m">Settings → Modbus</text>
+
+  <!-- arrow 1 -->
+  <path d="M270 161H360" stroke="#41BDF5" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="315" y="150" class="t lbl" text-anchor="middle">FC 04</text>
+
+  <!-- Client -->
+  <rect x="360" y="86" width="250" height="150" rx="12" class="box"/>
+  <text x="380" y="116" class="t h">Modbus client</text>
+  <text x="380" y="142" class="t s">Input registers, coils,</text>
+  <text x="380" y="160" class="t s">discrete inputs</text>
+  <text x="380" y="188" class="t s">Decodes CDAB float32,</text>
+  <text x="380" y="206" class="t s">uint32 and byte-swapped ASCII</text>
+
+  <!-- arrow 2 -->
+  <path d="M610 161H700" stroke="#41BDF5" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- Coordinator -->
+  <rect x="700" y="86" width="250" height="150" rx="12" class="box"/>
+  <text x="720" y="116" class="t h">Coordinator</text>
+  <text x="720" y="142" class="t s">Groups registers into</text>
+  <text x="720" y="160" class="t s">contiguous block reads</text>
+  <text x="720" y="188" class="t s">Polls fast and slow values</text>
+  <text x="720" y="206" class="t s">on separate intervals</text>
+
+  <!-- arrow 3 down -->
+  <path d="M825 236V286" stroke="#3DDC97" stroke-width="2.5" marker-end="url(#arrowg)"/>
+
+  <!-- Entities -->
+  <rect x="700" y="286" width="250" height="140" rx="12" class="boxg"/>
+  <text x="720" y="316" class="t h">Entities</text>
+  <text x="720" y="342" class="t s">Sensors, binary sensors,</text>
+  <text x="720" y="360" class="t s">switches</text>
+  <text x="720" y="388" class="t s">Names translated to</text>
+  <text x="720" y="406" class="t s">English and German</text>
+
+  <!-- Register maps -->
+  <rect x="40" y="286" width="570" height="140" rx="12" class="boxg"/>
+  <text x="60" y="316" class="t h">YAML register maps</text>
+  <text x="60" y="344" class="t m">components.yaml</text>
+  <text x="230" y="344" class="t s">one map per component type, offsets only</text>
+  <text x="60" y="372" class="t m">models.yaml</text>
+  <text x="230" y="372" class="t s">which components each model publishes</text>
+  <text x="60" y="400" class="t s">A component instance sits at</text>
+  <text x="262" y="400" class="t m">base + id × stride</text>
+  <text x="60" y="420" class="t s">Supporting another device is a data change, not a code change.</text>
+
+  <!-- link maps -> coordinator -->
+  <path d="M610 330H660V236" stroke="#3DDC97" stroke-width="2.5" fill="none" marker-end="url(#arrowg)" stroke-dasharray="6 5"/>
+</svg>

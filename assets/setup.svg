@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 520" width="1160" height="520" role="img" aria-label="Illustration of the two setup steps">
+  <style>
+    .t{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+    .card{fill:#1C1C1C;stroke:#2E2E2E;stroke-width:1}
+    .field{fill:#252525;stroke:#3A3A3A;stroke-width:1}
+    .title{font-size:19px;font-weight:600;fill:#E1E1E1}
+    .desc{font-size:12.5px;fill:#9B9B9B}
+    .lab{font-size:11px;fill:#03A9F4}
+    .val{font-size:14px;fill:#E1E1E1}
+    .hint{font-size:11px;fill:#7A7A7A}
+    .btn{fill:#03A9F4}
+    .btnt{font-size:13px;font-weight:600;fill:#0B1B2B}
+    .step{font-size:11px;font-weight:700;fill:#03A9F4;letter-spacing:.08em}
+  </style>
+  <rect width="1160" height="520" rx="16" fill="#111111"/>
+  <text x="34" y="40" class="t" font-size="14" fill="#6E6E6E">Illustration · Home Assistant setup dialog</text>
+
+  <!-- step 1 -->
+  <g transform="translate(34,62)">
+    <rect width="530" height="424" rx="12" class="card"/>
+    <text x="28" y="40" class="t step">STEP 1</text>
+    <text x="28" y="72" class="t title">Connect Shelly device</text>
+    <text x="28" y="100" class="t desc">Enter the address of a Shelly device with Modbus-TCP</text>
+    <text x="28" y="120" class="t desc">enabled. Enable it in the device web interface under</text>
+    <text x="28" y="140" class="t desc">Settings → Modbus.</text>
+
+    <rect x="28" y="164" width="474" height="58" rx="6" class="field"/>
+    <text x="44" y="186" class="t lab">Host or IP address</text>
+    <text x="44" y="208" class="t val">192.168.1.88</text>
+
+    <rect x="28" y="234" width="230" height="58" rx="6" class="field"/>
+    <text x="44" y="256" class="t lab">Port</text>
+    <text x="44" y="278" class="t val">502</text>
+
+    <rect x="272" y="234" width="230" height="58" rx="6" class="field"/>
+    <text x="288" y="256" class="t lab">Modbus unit ID</text>
+    <text x="288" y="278" class="t val">1</text>
+
+    <text x="28" y="322" class="t hint">The device is identified automatically once it answers.</text>
+
+    <rect x="386" y="348" width="116" height="40" rx="20" class="btn"/>
+    <text x="444" y="373" class="t btnt" text-anchor="middle">Submit</text>
+  </g>
+
+  <!-- step 2 -->
+  <g transform="translate(596,62)">
+    <rect width="530" height="424" rx="12" class="card"/>
+    <text x="28" y="40" class="t step">STEP 2</text>
+    <text x="28" y="72" class="t title">Select model</text>
+    <text x="28" y="100" class="t desc">The device reported “SPEM-003CEBEU”. Confirm the model</text>
+    <text x="28" y="120" class="t desc">and measuring profile, or pick a different one if the</text>
+    <text x="28" y="140" class="t desc">detection was wrong.</text>
+
+    <rect x="28" y="164" width="474" height="58" rx="6" class="field"/>
+    <text x="44" y="186" class="t lab">Model</text>
+    <text x="44" y="208" class="t val">Shelly Pro 3EM (SPEM-003CEBEU)</text>
+    <path d="M470 192l8 9 8-9" stroke="#9B9B9B" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+    <rect x="28" y="234" width="474" height="58" rx="6" class="field"/>
+    <text x="44" y="256" class="t lab">Measuring profile</text>
+    <text x="44" y="278" class="t val">triphase</text>
+    <path d="M470 262l8 9 8-9" stroke="#9B9B9B" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+    <g transform="translate(28,312)">
+      <rect width="474" height="34" rx="6" fill="#03A9F4" fill-opacity=".1"/>
+      <circle cx="20" cy="17" r="7" fill="none" stroke="#03A9F4" stroke-width="1.6"/>
+      <path d="M20 13v5M20 21h.01" stroke="#03A9F4" stroke-width="1.6" stroke-linecap="round"/>
+      <text x="38" y="22" class="t" font-size="11.5" fill="#7FCFF5">Detected from the device: model and active profile</text>
+    </g>
+
+    <rect x="386" y="366" width="116" height="40" rx="20" class="btn"/>
+    <text x="444" y="391" class="t btnt" text-anchor="middle">Submit</text>
+  </g>
+</svg>

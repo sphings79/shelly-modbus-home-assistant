@@ -1,0 +1,1082 @@
+# Shelly Gen2+ Modbus component register maps.
+#
+# All values are exposed by the device as INPUT REGISTERS (function code 0x04).
+#
+# IMPORTANT - address translation:
+#   The Shelly documentation lists addresses in the classic "3xxxx" input-register
+#   notation (e.g. 31020 for EM phase A voltage).  The address actually put on the
+#   wire is that number MINUS 30000, so 31020 is read as input register 1020.
+#   The `base` values below are already wire addresses.
+#   Verified on a Shelly Pro 3EM (SPEM-003CEBEU, fw 2.0.0) and a Shelly 3EM-63 Gen3
+#   (S3EM-003CXCEU63, fw 2.0.0).
+#
+# Encoding (verified against the devices' own RPC values):
+#   float   - 32 bit IEEE754 across 2 registers, LOW word first (CDAB word swap)
+#   uint32  - 32 bit unsigned across 2 registers, LOW word first
+#   boolean - single register, 0 / 1
+#   char    - ASCII, 2 bytes per register, byte-swapped within each register
+#
+# `offset` is relative to the component instance base address.  A component
+# instance's base is `base + id * stride`.
+
+device:
+  base: 0
+  stride: 0
+  fields:
+    mac:
+      offset: 0
+      count: 6
+      data_type: char
+      name: MAC Address
+      icon: "mdi:network-outline"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: static
+    model:
+      offset: 6
+      count: 10
+      data_type: char
+      name: Model
+      icon: "mdi:package-variant-closed"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: static
+    device_name:
+      offset: 16
+      count: 32
+      data_type: char
+      name: Device Name
+      icon: "mdi:rename-outline"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: static
+
+# Three-phase energy meter (Pro 3EM / 3EM-63 in "triphase" profile).
+em:
+  base: 1000
+  stride: 80
+  label: "Phase {phase}"
+  fields:
+    timestamp:
+      offset: 0
+      data_type: uint32
+      name: Last Update
+      device_class: timestamp
+      icon: "mdi:clock-outline"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: high
+    a_meter_error:
+      offset: 2
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase A Meter Error
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_meter_error:
+      offset: 3
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase B Meter Error
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_meter_error:
+      offset: 4
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase C Meter Error
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    n_meter_error:
+      offset: 5
+      data_type: boolean
+      platform: binary_sensor
+      name: Neutral Meter Error
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    phase_sequence_error:
+      offset: 6
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase Sequence Error
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    n_current:
+      offset: 7
+      data_type: float
+      name: Neutral Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: false
+      scan_interval: high
+    n_current_mismatch:
+      offset: 9
+      data_type: boolean
+      platform: binary_sensor
+      name: Neutral Current Mismatch
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    n_overcurrent_error:
+      offset: 10
+      data_type: boolean
+      platform: binary_sensor
+      name: Neutral Overcurrent
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    total_current:
+      offset: 11
+      data_type: float
+      name: Total Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: true
+      scan_interval: high
+    total_act_power:
+      offset: 13
+      data_type: float
+      name: Total Active Power
+      unit: W
+      device_class: power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    total_aprt_power:
+      offset: 15
+      data_type: float
+      name: Total Apparent Power
+      unit: VA
+      device_class: apparent_power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: false
+      scan_interval: high
+    a_voltage:
+      offset: 20
+      data_type: float
+      name: Phase A Voltage
+      unit: V
+      device_class: voltage
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    a_current:
+      offset: 22
+      data_type: float
+      name: Phase A Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: true
+      scan_interval: high
+    a_act_power:
+      offset: 24
+      data_type: float
+      name: Phase A Active Power
+      unit: W
+      device_class: power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    a_aprt_power:
+      offset: 26
+      data_type: float
+      name: Phase A Apparent Power
+      unit: VA
+      device_class: apparent_power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: false
+      scan_interval: high
+    a_pf:
+      offset: 28
+      data_type: float
+      name: Phase A Power Factor
+      device_class: power_factor
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: high
+    a_overpower_error:
+      offset: 30
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase A Overpower
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_overvoltage_error:
+      offset: 31
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase A Overvoltage
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_overcurrent_error:
+      offset: 32
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase A Overcurrent
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_freq:
+      offset: 33
+      data_type: float
+      name: Phase A Frequency
+      unit: Hz
+      device_class: frequency
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: low
+    b_voltage:
+      offset: 40
+      data_type: float
+      name: Phase B Voltage
+      unit: V
+      device_class: voltage
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    b_current:
+      offset: 42
+      data_type: float
+      name: Phase B Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: true
+      scan_interval: high
+    b_act_power:
+      offset: 44
+      data_type: float
+      name: Phase B Active Power
+      unit: W
+      device_class: power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    b_aprt_power:
+      offset: 46
+      data_type: float
+      name: Phase B Apparent Power
+      unit: VA
+      device_class: apparent_power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: false
+      scan_interval: high
+    b_pf:
+      offset: 48
+      data_type: float
+      name: Phase B Power Factor
+      device_class: power_factor
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: high
+    b_overpower_error:
+      offset: 50
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase B Overpower
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_overvoltage_error:
+      offset: 51
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase B Overvoltage
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_overcurrent_error:
+      offset: 52
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase B Overcurrent
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_freq:
+      offset: 53
+      data_type: float
+      name: Phase B Frequency
+      unit: Hz
+      device_class: frequency
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: low
+    c_voltage:
+      offset: 60
+      data_type: float
+      name: Phase C Voltage
+      unit: V
+      device_class: voltage
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    c_current:
+      offset: 62
+      data_type: float
+      name: Phase C Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: true
+      scan_interval: high
+    c_act_power:
+      offset: 64
+      data_type: float
+      name: Phase C Active Power
+      unit: W
+      device_class: power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    c_aprt_power:
+      offset: 66
+      data_type: float
+      name: Phase C Apparent Power
+      unit: VA
+      device_class: apparent_power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: false
+      scan_interval: high
+    c_pf:
+      offset: 68
+      data_type: float
+      name: Phase C Power Factor
+      device_class: power_factor
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: high
+    c_overpower_error:
+      offset: 70
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase C Overpower
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_overvoltage_error:
+      offset: 71
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase C Overvoltage
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_overcurrent_error:
+      offset: 72
+      data_type: boolean
+      platform: binary_sensor
+      name: Phase C Overcurrent
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_freq:
+      offset: 73
+      data_type: float
+      name: Phase C Frequency
+      unit: Hz
+      device_class: frequency
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: low
+
+# Accumulated energy counters belonging to a three-phase meter.
+# NOTE: the "perpetual count" fields are the lifetime counters that match the
+# values the device reports over RPC; the non-perpetual ones reset with the
+# device's own counters.  Only the perpetual ones are enabled by default because
+# they are the ones suitable for the HA energy dashboard.
+emdata:
+  base: 1160
+  stride: 70
+  fields:
+    timestamp:
+      offset: 0
+      data_type: uint32
+      name: Energy Last Update
+      device_class: timestamp
+      icon: "mdi:clock-outline"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    total_act_energy:
+      offset: 2
+      data_type: float
+      name: Total Active Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    total_act_ret_energy:
+      offset: 4
+      data_type: float
+      name: Total Active Returned Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    a_total_act_energy_period:
+      offset: 10
+      data_type: float
+      name: Phase A Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_fund_act_energy_period:
+      offset: 12
+      data_type: float
+      name: Phase A Fundamental Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_total_act_ret_energy_period:
+      offset: 14
+      data_type: float
+      name: Phase A Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_fund_act_ret_energy_period:
+      offset: 16
+      data_type: float
+      name: Phase A Fundamental Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_lagging_react_energy:
+      offset: 18
+      data_type: float
+      name: Phase A Lagging Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_leading_react_energy:
+      offset: 20
+      data_type: float
+      name: Phase A Leading Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    a_total_act_energy:
+      offset: 22
+      data_type: float
+      name: Phase A Active Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    a_total_act_ret_energy:
+      offset: 24
+      data_type: float
+      name: Phase A Active Returned Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    b_total_act_energy_period:
+      offset: 30
+      data_type: float
+      name: Phase B Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_fund_act_energy_period:
+      offset: 32
+      data_type: float
+      name: Phase B Fundamental Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_total_act_ret_energy_period:
+      offset: 34
+      data_type: float
+      name: Phase B Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_fund_act_ret_energy_period:
+      offset: 36
+      data_type: float
+      name: Phase B Fundamental Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_lagging_react_energy:
+      offset: 38
+      data_type: float
+      name: Phase B Lagging Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_leading_react_energy:
+      offset: 40
+      data_type: float
+      name: Phase B Leading Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    b_total_act_energy:
+      offset: 42
+      data_type: float
+      name: Phase B Active Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    b_total_act_ret_energy:
+      offset: 44
+      data_type: float
+      name: Phase B Active Returned Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    c_total_act_energy_period:
+      offset: 50
+      data_type: float
+      name: Phase C Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_fund_act_energy_period:
+      offset: 52
+      data_type: float
+      name: Phase C Fundamental Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_total_act_ret_energy_period:
+      offset: 54
+      data_type: float
+      name: Phase C Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_fund_act_ret_energy_period:
+      offset: 56
+      data_type: float
+      name: Phase C Fundamental Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_lagging_react_energy:
+      offset: 58
+      data_type: float
+      name: Phase C Lagging Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_leading_react_energy:
+      offset: 60
+      data_type: float
+      name: Phase C Leading Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    c_total_act_energy:
+      offset: 62
+      data_type: float
+      name: Phase C Active Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    c_total_act_ret_energy:
+      offset: 64
+      data_type: float
+      name: Phase C Active Returned Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+
+# Single-phase energy meter channel (Pro EM, Pro 3EM in "monophase" profile,
+# EM Gen4, EM Mini Gen4).  One component instance per measured channel.
+em1:
+  base: 2000
+  stride: 20
+  instance_label: "Channel {id_1}"
+  fields:
+    timestamp:
+      offset: 0
+      data_type: uint32
+      name: Last Update
+      device_class: timestamp
+      icon: "mdi:clock-outline"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: high
+    error:
+      offset: 2
+      data_type: boolean
+      platform: binary_sensor
+      name: Meter Error
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    voltage:
+      offset: 3
+      data_type: float
+      name: Voltage
+      unit: V
+      device_class: voltage
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    current:
+      offset: 5
+      data_type: float
+      name: Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: true
+      scan_interval: high
+    act_power:
+      offset: 7
+      data_type: float
+      name: Active Power
+      unit: W
+      device_class: power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    aprt_power:
+      offset: 9
+      data_type: float
+      name: Apparent Power
+      unit: VA
+      device_class: apparent_power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: false
+      scan_interval: high
+    pf:
+      offset: 11
+      data_type: float
+      name: Power Factor
+      device_class: power_factor
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: high
+    overpower_error:
+      offset: 13
+      data_type: boolean
+      platform: binary_sensor
+      name: Overpower
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    overvoltage_error:
+      offset: 14
+      data_type: boolean
+      platform: binary_sensor
+      name: Overvoltage
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    overcurrent_error:
+      offset: 15
+      data_type: boolean
+      platform: binary_sensor
+      name: Overcurrent
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    freq:
+      offset: 16
+      data_type: float
+      name: Frequency
+      unit: Hz
+      device_class: frequency
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: low
+
+# Accumulated energy counters for a single-phase meter channel.
+em1data:
+  base: 2300
+  stride: 20
+  instance_label: "Channel {id_1}"
+  fields:
+    timestamp:
+      offset: 0
+      data_type: uint32
+      name: Energy Last Update
+      device_class: timestamp
+      icon: "mdi:clock-outline"
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    total_act_energy_period:
+      offset: 2
+      data_type: float
+      name: Active Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    total_act_ret_energy_period:
+      offset: 4
+      data_type: float
+      name: Active Returned Energy (Period)
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total
+      precision: 3
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    lagging_react_energy:
+      offset: 6
+      data_type: float
+      name: Lagging Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    leading_react_energy:
+      offset: 8
+      data_type: float
+      name: Leading Reactive Energy
+      unit: varh
+      device_class: reactive_energy
+      state_class: total_increasing
+      precision: 1
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    total_act_energy:
+      offset: 10
+      data_type: float
+      name: Active Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    total_act_ret_energy:
+      offset: 12
+      data_type: float
+      name: Active Returned Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+
+# Relay output with optional power metering (Gen4 switches, Pro Output Addon).
+# The measured values live in input registers; the output itself is a coil at
+# `coil_base + id * coil_stride` and is exposed as a switch entity.
+switch:
+  base: 3000
+  stride: 20
+  coil_base: 100
+  coil_stride: 10
+  instance_label: "Switch {id_1}"
+  fields:
+    output:
+      offset: 0
+      data_type: boolean
+      platform: switch
+      name: Output
+      device_class: outlet
+      enabled_by_default: true
+      scan_interval: high
+    voltage:
+      offset: 1
+      data_type: float
+      name: Voltage
+      unit: V
+      device_class: voltage
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    current:
+      offset: 3
+      data_type: float
+      name: Current
+      unit: A
+      device_class: current
+      state_class: measurement
+      precision: 3
+      enabled_by_default: true
+      scan_interval: high
+    act_power:
+      offset: 5
+      data_type: float
+      name: Active Power
+      unit: W
+      device_class: power
+      state_class: measurement
+      precision: 1
+      enabled_by_default: true
+      scan_interval: high
+    freq:
+      offset: 7
+      data_type: float
+      name: Frequency
+      unit: Hz
+      device_class: frequency
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: low
+    pf:
+      offset: 9
+      data_type: float
+      name: Power Factor
+      device_class: power_factor
+      state_class: measurement
+      precision: 2
+      enabled_by_default: false
+      scan_interval: high
+    act_energy:
+      offset: 11
+      data_type: float
+      name: Active Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: true
+      scan_interval: low
+    act_ret_energy:
+      offset: 13
+      data_type: float
+      name: Active Returned Energy
+      unit: kWh
+      scale: 0.001
+      device_class: energy
+      state_class: total_increasing
+      precision: 3
+      enabled_by_default: false
+      scan_interval: low
+    undervoltage_error:
+      offset: 15
+      data_type: boolean
+      platform: binary_sensor
+      name: Undervoltage
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    overvoltage_error:
+      offset: 16
+      data_type: boolean
+      platform: binary_sensor
+      name: Overvoltage
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    overcurrent_error:
+      offset: 17
+      data_type: boolean
+      platform: binary_sensor
+      name: Overcurrent
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+    overpower_error:
+      offset: 18
+      data_type: boolean
+      platform: binary_sensor
+      name: Overpower
+      device_class: problem
+      category: diagnostic
+      enabled_by_default: false
+      scan_interval: low
+
+# Physical input, exposed as a discrete input (function code 0x02).
+# Gen4 devices only.
+input:
+  discrete_base: 100
+  discrete_stride: 10
+  instance_label: "Input {id_1}"
+  fields:
+    state:
+      data_type: discrete
+      platform: binary_sensor
+      name: State
+      enabled_by_default: true
+      scan_interval: high

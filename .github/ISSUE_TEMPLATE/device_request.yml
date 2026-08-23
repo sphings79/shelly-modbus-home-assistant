@@ -1,0 +1,45 @@
+name: Device support request
+description: Ask for a Shelly device to be added
+labels: ["device support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adding a device is usually just a data change. The information below is what makes it possible.
+  - type: input
+    id: device_name
+    attributes:
+      label: Device name
+      placeholder: Shelly EM Gen4
+    validations:
+      required: true
+  - type: textarea
+    id: device_info
+    attributes:
+      label: Device info
+      description: Output of `curl -s http://<device-ip>/rpc/Shelly.GetDeviceInfo`
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: components
+    attributes:
+      label: Components
+      description: Output of `curl -s "http://<device-ip>/rpc/Shelly.GetComponents?dynamic_only=false"`
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: modbus
+    attributes:
+      label: Modbus enabled?
+      description: Output of `curl -s http://<device-ip>/rpc/Modbus.GetConfig`
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: testing
+    attributes:
+      label: Testing
+      options:
+        - label: I have this device and can test a pull request against it

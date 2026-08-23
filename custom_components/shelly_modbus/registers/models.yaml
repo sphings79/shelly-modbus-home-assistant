@@ -1,0 +1,221 @@
+# Shelly device models that expose a Modbus-TCP server, and the component
+# instances each one publishes.
+#
+# `model` keys are the exact strings the device reports in input registers 6..15
+# (documented address 30006), so a connected device can be identified
+# automatically.  Model codes follow the official Shelly product identifiers.
+#
+# Devices whose measuring profile can be switched (the 3-phase energy meters can
+# run as one 3-phase meter or as three independent single-phase meters) declare
+# one entry per profile.  Which profile is active is detected by probing, and
+# can be overridden manually during setup.
+
+models:
+  SPEM-003CEBEU:
+    name: Shelly Pro 3EM
+    gen: 2
+    default_profile: triphase
+    profiles:
+      triphase:
+        components:
+          - {type: em, id: 0}
+          - {type: emdata, id: 0}
+      monophase:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1, id: 2}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+          - {type: em1data, id: 2}
+
+  SPEM-003CEBEU63:
+    name: Shelly Pro 3EM-3CT63
+    gen: 2
+    default_profile: triphase
+    profiles:
+      triphase:
+        components:
+          - {type: em, id: 0}
+          - {type: emdata, id: 0}
+      monophase:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1, id: 2}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+          - {type: em1data, id: 2}
+
+  SPEM-003CEBEU120:
+    name: Shelly Pro 3EM-120
+    gen: 2
+    default_profile: triphase
+    profiles:
+      triphase:
+        components:
+          - {type: em, id: 0}
+          - {type: emdata, id: 0}
+      monophase:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1, id: 2}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+          - {type: em1data, id: 2}
+
+  SPEM-003CEBEU400:
+    name: Shelly Pro 3EM-400
+    gen: 2
+    default_profile: triphase
+    profiles:
+      triphase:
+        components:
+          - {type: em, id: 0}
+          - {type: emdata, id: 0}
+      monophase:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1, id: 2}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+          - {type: em1data, id: 2}
+
+  SPEM-002CEBEU50:
+    name: Shelly Pro EM 50
+    gen: 2
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+          - {type: switch, id: 100}
+
+  S3EM-003CXCEU63:
+    name: Shelly 3EM-63 Gen3
+    gen: 3
+    default_profile: triphase
+    profiles:
+      triphase:
+        components:
+          - {type: em, id: 0}
+          - {type: emdata, id: 0}
+      monophase:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1, id: 2}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+          - {type: em1data, id: 2}
+
+  S3EM-002CXCEU:
+    name: Shelly EM Gen3
+    gen: 3
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1, id: 1}
+          - {type: em1data, id: 0}
+          - {type: em1data, id: 1}
+
+  S4EM-001PXCEU16:
+    name: Shelly EM Mini Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1data, id: 0}
+
+  S4EM-001CXCEU63:
+    name: Shelly EM 63 Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: em1, id: 0}
+          - {type: em1data, id: 0}
+
+  S4SW-001X16EU:
+    name: Shelly 1 Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0, metering: false}
+          - {type: input, id: 0}
+
+  S4SW-001X8EU:
+    name: Shelly 1 Mini Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0, metering: false}
+          - {type: input, id: 0}
+
+  S4SW-0A1X1EUL:
+    name: Shelly 1L Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0, metering: false}
+          - {type: input, id: 0}
+
+  S4SW-001P16EU:
+    name: Shelly 1PM Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0}
+          - {type: input, id: 0}
+
+  S4SW-001P8EU:
+    name: Shelly 1PM Mini Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0}
+          - {type: input, id: 0}
+
+  S4SW-002P16EU:
+    name: Shelly 2PM Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0}
+          - {type: switch, id: 1}
+          - {type: input, id: 0}
+          - {type: input, id: 1}
+
+  S4SW-0A2X4EUL:
+    name: Shelly 2L Gen4
+    gen: 4
+    default_profile: default
+    profiles:
+      default:
+        components:
+          - {type: switch, id: 0, metering: false}
+          - {type: switch, id: 1, metering: false}
+          - {type: input, id: 0}
+          - {type: input, id: 1}

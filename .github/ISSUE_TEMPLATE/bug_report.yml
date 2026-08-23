@@ -1,0 +1,72 @@
+name: Bug report
+description: Something is not working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please fill in as much as you can.
+  - type: input
+    id: device
+    attributes:
+      label: Device model
+      description: The model code, e.g. `SPEM-003CEBEU`. Run `curl -s http://<device-ip>/rpc/Shelly.GetDeviceInfo`
+      placeholder: SPEM-003CEBEU
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Device firmware version
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.8.0"
+    validations:
+      required: true
+  - type: input
+    id: integration_version
+    attributes:
+      label: Integration version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Measuring profile
+      options:
+        - triphase
+        - monophase
+        - not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug log
+      description: |
+        Enable debug logging, reproduce, and paste the log here.
+        ```yaml
+        logger:
+          logs:
+            custom_components.shelly_modbus: debug
+        ```
+      render: shell
+  - type: textarea
+    id: device_info
+    attributes:
+      label: Device components
+      description: Output of `curl -s "http://<device-ip>/rpc/Shelly.GetComponents?dynamic_only=false"`
+      render: json

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-label="Shelly Modbus for Home Assistant">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1B2B"/>
+      <stop offset="55%" stop-color="#10293F"/>
+      <stop offset="100%" stop-color="#0A2233"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#41BDF5"/>
+      <stop offset="100%" stop-color="#3DDC97"/>
+    </linearGradient>
+    <linearGradient id="wire" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#41BDF5" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="#41BDF5" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#3DDC97" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="340" rx="18" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="4" rx="2" fill="url(#accent)"/>
+
+  <!-- subtle grid -->
+  <g stroke="#41BDF5" stroke-opacity="0.06" stroke-width="1">
+    <path d="M0 60H1200M0 120H1200M0 180H1200M0 240H1200M0 300H1200"/>
+    <path d="M120 0V340M280 0V340M440 0V340M760 0V340M920 0V340M1080 0V340"/>
+  </g>
+
+  <!-- title -->
+  <text x="72" y="132" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="58" font-weight="700" fill="#F2F8FC">Shelly Modbus</text>
+  <text x="72" y="180" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="27" font-weight="500" fill="#41BDF5">for Home Assistant</text>
+  <text x="72" y="228" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="19" fill="#9FB6C6">Local Modbus&#8209;TCP polling &#183; no cloud &#183; no RPC &#183; energy meters &amp; relays</text>
+
+  <!-- feature chips -->
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="600">
+    <rect x="72" y="256" width="124" height="34" rx="17" fill="#41BDF5" fill-opacity="0.12" stroke="#41BDF5" stroke-opacity="0.45"/>
+    <text x="134" y="278" fill="#8FD6F7" text-anchor="middle">Pro 3EM</text>
+    <rect x="208" y="256" width="150" height="34" rx="17" fill="#41BDF5" fill-opacity="0.12" stroke="#41BDF5" stroke-opacity="0.45"/>
+    <text x="283" y="278" fill="#8FD6F7" text-anchor="middle">3EM-63 Gen3</text>
+    <rect x="370" y="256" width="128" height="34" rx="17" fill="#3DDC97" fill-opacity="0.12" stroke="#3DDC97" stroke-opacity="0.45"/>
+    <text x="434" y="278" fill="#86E9BE" text-anchor="middle">Gen4</text>
+    <rect x="510" y="256" width="112" height="34" rx="17" fill="#3DDC97" fill-opacity="0.12" stroke="#3DDC97" stroke-opacity="0.45"/>
+    <text x="566" y="278" fill="#86E9BE" text-anchor="middle">HACS</text>
+  </g>
+
+  <!-- device -> HA illustration -->
+  <g transform="translate(770,74)">
+    <!-- shelly device -->
+    <rect x="0" y="42" width="130" height="104" rx="12" fill="#16344C" stroke="#41BDF5" stroke-opacity="0.55" stroke-width="2"/>
+    <rect x="16" y="60" width="98" height="10" rx="5" fill="#41BDF5" fill-opacity="0.55"/>
+    <rect x="16" y="80" width="70" height="8" rx="4" fill="#41BDF5" fill-opacity="0.28"/>
+    <g fill="#3DDC97">
+      <circle cx="26" cy="122" r="6"/><circle cx="50" cy="122" r="6" fill-opacity="0.55"/><circle cx="74" cy="122" r="6" fill-opacity="0.3"/>
+    </g>
+    <text x="65" y="172" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#9FB6C6" text-anchor="middle">Shelly</text>
+
+    <!-- wire -->
+    <path d="M130 94H278" stroke="url(#wire)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="204" cy="94" r="20" fill="#0B1B2B" stroke="#41BDF5" stroke-opacity="0.5" stroke-width="2"/>
+    <text x="204" y="99" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11" font-weight="700" fill="#41BDF5" text-anchor="middle">502</text>
+
+    <!-- HA house -->
+    <g transform="translate(278,42)">
+      <rect x="0" y="0" width="130" height="104" rx="12" fill="#16344C" stroke="#3DDC97" stroke-opacity="0.55" stroke-width="2"/>
+      <path d="M65 22 L104 56 L96 56 L96 84 L34 84 L34 56 L26 56 Z" fill="none" stroke="#3DDC97" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M65 44 L65 70 M53 57 L77 57" stroke="#3DDC97" stroke-width="3.5" stroke-linecap="round"/>
+      <text x="65" y="130" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#9FB6C6" text-anchor="middle">Home Assistant</text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+{
+  "domain": "shelly_modbus",
+  "name": "Shelly Modbus",
+  "version": "1.0.0",
+  "config_flow": true,
+  "documentation": "https://github.com/sphings79/shelly-modbus-home-assistant",
+  "issue_tracker": "https://github.com/sphings79/shelly-modbus-home-assistant/issues",
+  "requirements": [
+    "pymodbus>=3.9.2"
+  ],
+  "codeowners": [
+    "@sphings79"
+  ],
+  "iot_class": "local_polling",
+  "integration_type": "device",
+  "zeroconf": [
+    "_shelly._tcp.local."
+  ]
+}

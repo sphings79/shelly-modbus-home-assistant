@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Shelly Modbus API documentation
+    url: https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Modbus/
+    about: Official register documentation from Shelly
