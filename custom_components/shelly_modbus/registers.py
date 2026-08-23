@@ -11,6 +11,7 @@ and the platforms work with.
 from __future__ import annotations
 
 import logging
+from functools import cache
 from pathlib import Path
 from typing import Any
 
@@ -41,14 +42,31 @@ def _load_yaml(path: Path) -> dict:
         return {}
 
 
+@cache
 def load_components() -> dict[str, Any]:
-    """Return the component register maps."""
+    """Return the component register maps.
+
+    Cached: the files ship with the integration and never change at runtime.
+    Call :func:`preload` from an executor first so the one real read does not
+    block the event loop.
+    """
     return _load_yaml(_REGISTER_DIR / "components.yaml")
 
 
+@cache
 def load_models() -> dict[str, Any]:
     """Return the model database keyed by Shelly model code."""
     return _load_yaml(_REGISTER_DIR / "models.yaml").get("models", {})
+
+
+def preload() -> None:
+    """Read both register files into the cache.
+
+    Run this in an executor before anything touches the definitions, so the
+    file I/O never happens inside the event loop.
+    """
+    load_components()
+    load_models()
 
 
 def model_options() -> dict[str, str]:

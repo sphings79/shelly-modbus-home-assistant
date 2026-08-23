@@ -27,7 +27,7 @@ from .const import (
     SCAN_INTERVAL_LOW,
     SCAN_INTERVAL_STATIC,
 )
-from .helpers.modbus_client import ShellyModbusClient, decode_registers
+from .helpers.modbus_client import ShellyModbusClient, decode_registers, format_host
 from .registers import build_blocks, expand_definitions, load_models
 
 _LOGGER = logging.getLogger(__name__)
@@ -106,26 +106,6 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
         """Mark a definition as backing a live entity, so it gets polled."""
         self._registered_keys.add(key)
 
-    def update_options(self, entry: ConfigEntry) -> bool:
-        """Apply new option values. Returns True when the interval changed."""
-        options = dict(entry.options)
-        new_intervals = {
-            SCAN_INTERVAL_HIGH: int(
-                options.get(
-                    CONF_SCAN_INTERVAL_HIGH, DEFAULT_SCAN_INTERVALS[SCAN_INTERVAL_HIGH]
-                )
-            ),
-            SCAN_INTERVAL_LOW: int(
-                options.get(
-                    CONF_SCAN_INTERVAL_LOW, DEFAULT_SCAN_INTERVALS[SCAN_INTERVAL_LOW]
-                )
-            ),
-        }
-        changed = new_intervals != self.scan_intervals
-        self.scan_intervals = new_intervals
-        self.update_interval = timedelta(seconds=new_intervals[SCAN_INTERVAL_HIGH])
-        return changed
-
     # ------------------------------------------------------------------
     # Device metadata
     # ------------------------------------------------------------------
@@ -145,7 +125,7 @@ class ShellyModbusCoordinator(DataUpdateCoordinator):
             "manufacturer": MANUFACTURER,
             "model": self.model_name,
             "name": self.entry.title,
-            "configuration_url": f"http://{self.host}",
+            "configuration_url": f"http://{format_host(self.host)}",
         }
         if mac := data.get("mac"):
             # Format as a proper MAC so HA can link it to other integrations.

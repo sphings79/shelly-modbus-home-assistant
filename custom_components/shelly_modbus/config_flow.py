@@ -37,7 +37,7 @@ from .const import (
     SCAN_INTERVAL_LOW,
 )
 from .helpers.modbus_client import ShellyModbusClient, decode_registers
-from .registers import load_components, load_models
+from .registers import load_components, load_models, preload
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,6 +47,11 @@ _PROFILE_PROBES = {
     "monophase": ("em1", 0),
     "default": None,
 }
+
+
+async def async_preload_registers(hass) -> None:
+    """Read the register YAML off the event loop before it is first used."""
+    await hass.async_add_executor_job(preload)
 
 
 async def async_identify_device(
@@ -121,6 +126,7 @@ class ShellyModbusConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Ask for the address, then identify the device."""
         errors: dict[str, str] = {}
+        await async_preload_registers(self.hass)
 
         if user_input is not None:
             self._host = user_input["host"].strip()
@@ -235,8 +241,19 @@ class ShellyModbusConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_zeroconf(self, discovery_info) -> ConfigFlowResult:
         """Handle a Shelly announced over mDNS."""
+        await async_preload_registers(self.hass)
+
         host = discovery_info.host
         properties = getattr(discovery_info, "properties", {}) or {}
+
+        # Prefer IPv4 when the announcement carries both: Shelly's Modbus server
+        # is reachable either way, but an IPv4 literal keeps host strings simple
+        # everywhere they are shown or embedded in a URL.
+        for candidate in getattr(discovery_info, "ip_addresses", []) or []:
+            text = str(candidate)
+            if "." in text and ":" not in text:
+                host = text
+                break
 
         # The mDNS name carries the MAC, which is the unique id.
         name = getattr(discovery_info, "name", "") or ""

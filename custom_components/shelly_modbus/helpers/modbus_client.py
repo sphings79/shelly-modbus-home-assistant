@@ -54,6 +54,18 @@ REGISTER_COUNTS = {
 }
 
 
+def format_host(host: str) -> str:
+    """Return a host usable inside a URL.
+
+    A bare IPv6 address has to be bracketed, otherwise its colons are parsed as
+    a port separator and the URL is rejected. Zeroconf hands out IPv6 addresses
+    on dual-stack networks, so this is not a rare case.
+    """
+    if ":" in host and not host.startswith("["):
+        return f"[{host}]"
+    return host
+
+
 def register_count(data_type: str, count: int | None = None) -> int:
     """Return how many registers a field of ``data_type`` occupies."""
     if count is not None:

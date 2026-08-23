@@ -13,12 +13,17 @@ from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, PLATFORMS
 from .coordinator import ShellyModbusCoordinator
+from .registers import preload
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up a Shelly device from a config entry."""
+    # The register maps come from YAML on disk; read them in an executor so the
+    # event loop is never blocked. Everything afterwards hits the cache.
+    await hass.async_add_executor_job(preload)
+
     coordinator = ShellyModbusCoordinator(hass, entry)
 
     if not coordinator.definitions:
@@ -43,15 +48,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_update_options(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Apply changed options without tearing the entry down."""
-    coordinator: ShellyModbusCoordinator | None = hass.data.get(DOMAIN, {}).get(
-        entry.entry_id
-    )
-    if coordinator is None:
-        return
+    """Reload the entry when its options change.
 
-    if coordinator.update_options(entry):
-        await coordinator.async_request_refresh()
+    Home Assistant expects an update listener to schedule a reload rather than
+    reconfigure in place, and applying options by hand would not cover the ones
+    that change how entities are constructed anyway.
+    """
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
