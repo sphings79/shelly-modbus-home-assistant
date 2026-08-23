@@ -177,14 +177,21 @@ Enter the host, then confirm the detected model and profile.
 
 **Settings → Devices & Services → Shelly Modbus → Configure**
 
-Registers are grouped into two categories, each with its own interval:
+Registers are grouped into two categories, each polled on its own interval:
 
-| Category | Contains | Default | Range |
+| Category | Default | Range | Contains |
 |---|---|---|---|
-| **Fast values** | Power, voltage, current, power factor, output states | 10 s | 1–3600 s |
-| **Slow values** | Energy counters, frequency, error flags | 60 s | 5–86400 s |
+| **Fast values** | **5 s** | 1–3600 s | Active/apparent power, voltage, current, power factor, relay output states |
+| **Slow values** | **60 s** | 5–86400 s | Energy counters, frequency, error and diagnostic flags |
+| Device identity | read once | — | MAC, model, device name |
 
-Device identity (MAC, model, name) is read once at startup and never polled again.
+**Why 5 seconds.** A fast cycle is three Modbus block reads and completes in 70–100 ms on a
+Pro 3EM, so the default keeps the device at roughly 2% utilisation. There is plenty of head
+room: at 3 s it is about 3%, at 1 s about 10%. If you drive an export limiter or a battery
+controller from these values, going down to 1–2 s is fine. Raise it instead if the device is
+on weak Wi-Fi or several Modbus clients share it.
+
+Device identity is read once at startup and never polled again.
 
 > **Tip:** disabling entities you do not need genuinely reduces Modbus traffic — the coordinator
 > only reads registers that back an enabled entity.

@@ -35,8 +35,13 @@ CONF_SCAN_INTERVAL_LOW = "scan_interval_low"
 
 # Fast-changing measurements (power, voltage, current) vs. slow ones
 # (energy counters, error flags).  Static values are read once at startup.
+#
+# A fast cycle is three block reads and takes 70-100 ms on a Pro 3EM, so five
+# seconds keeps the device at roughly 2% utilisation while halving the latency
+# of the power readings. Going down to 1-2 s is fine for export-limiting
+# setups; the options flow allows it.
 DEFAULT_SCAN_INTERVALS = {
-    SCAN_INTERVAL_HIGH: 10,
+    SCAN_INTERVAL_HIGH: 5,
     SCAN_INTERVAL_LOW: 60,
 }
 

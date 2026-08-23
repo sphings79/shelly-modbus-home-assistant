@@ -178,15 +178,22 @@ Host eingeben, danach das erkannte Modell und Profil bestätigen.
 
 **Einstellungen → Geräte & Dienste → Shelly Modbus → Konfigurieren**
 
-Die Register sind in zwei Kategorien mit eigenem Intervall aufgeteilt:
+Die Register sind in zwei Kategorien aufgeteilt, jede mit eigenem Intervall:
 
-| Kategorie | Enthält | Standard | Bereich |
+| Kategorie | Standard | Bereich | Enthält |
 |---|---|---|---|
-| **Schnelle Werte** | Leistung, Spannung, Strom, Leistungsfaktor, Schaltzustände | 10 s | 1–3600 s |
-| **Langsame Werte** | Energiezähler, Frequenz, Fehlermeldungen | 60 s | 5–86400 s |
+| **Schnelle Werte** | **5 s** | 1–3600 s | Wirk- und Scheinleistung, Spannung, Strom, Leistungsfaktor, Schaltzustände |
+| **Langsame Werte** | **60 s** | 5–86400 s | Energiezähler, Frequenz, Fehler- und Diagnosemeldungen |
+| Geräteidentität | einmalig | — | MAC, Modell, Gerätename |
 
-Die Geräteidentität (MAC, Modell, Name) wird einmal beim Start gelesen und danach nie wieder
-abgefragt.
+**Warum 5 Sekunden.** Ein schneller Zyklus sind drei Modbus-Blockabfragen und dauert auf einem
+Pro 3EM 70–100 ms. Der Standard hält das Gerät damit bei rund 2 % Auslastung. Nach unten ist
+reichlich Luft: bei 3 s sind es etwa 3 %, bei 1 s etwa 10 %. Wer aus diesen Werten eine
+Nulleinspeisung oder Batteriesteuerung regelt, kann bedenkenlos auf 1–2 s gehen. Höher stellen
+sollte man es, wenn das Gerät an schwachem WLAN hängt oder mehrere Modbus-Clients darauf
+zugreifen.
+
+Die Geräteidentität wird einmal beim Start gelesen und danach nie wieder abgefragt.
 
 > **Tipp:** Nicht benötigte Entitäten zu deaktivieren reduziert den Modbus-Verkehr tatsächlich —
 > der Coordinator liest nur Register, hinter denen eine aktive Entität steht.

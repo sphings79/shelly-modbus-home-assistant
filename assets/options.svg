@@ -23,7 +23,7 @@
 
     <rect x="28" y="142" width="544" height="58" rx="6" class="field"/>
     <text x="44" y="164" class="t lab">Fast values interval (seconds)</text>
-    <text x="44" y="186" class="t val">10</text>
+    <text x="44" y="186" class="t val">5</text>
     <text x="544" y="186" class="t unit" text-anchor="end">s</text>
 
     <rect x="28" y="214" width="544" height="58" rx="6" class="field"/>

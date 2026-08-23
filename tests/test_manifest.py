@@ -45,6 +45,41 @@ def test_hacs_manifest_exists():
     assert hacs["homeassistant"]
 
 
+def test_default_scan_intervals():
+    """The documented defaults and the code must not drift apart."""
+    from shelly_modbus.const import (
+        DEFAULT_SCAN_INTERVALS,
+        SCAN_INTERVAL_HIGH,
+        SCAN_INTERVAL_LIMITS,
+        SCAN_INTERVAL_LOW,
+    )
+
+    assert DEFAULT_SCAN_INTERVALS[SCAN_INTERVAL_HIGH] == 5
+    assert DEFAULT_SCAN_INTERVALS[SCAN_INTERVAL_LOW] == 60
+
+    # Every default has to sit inside its own allowed range.
+    for category, default in DEFAULT_SCAN_INTERVALS.items():
+        low, high = SCAN_INTERVAL_LIMITS[category]
+        assert low <= default <= high, f"{category} default outside its limits"
+
+
+def test_readmes_document_the_defaults():
+    """Both READMEs must state the intervals the code actually uses."""
+    from shelly_modbus.const import (
+        DEFAULT_SCAN_INTERVALS,
+        SCAN_INTERVAL_HIGH,
+        SCAN_INTERVAL_LOW,
+    )
+
+    fast = DEFAULT_SCAN_INTERVALS[SCAN_INTERVAL_HIGH]
+    slow = DEFAULT_SCAN_INTERVALS[SCAN_INTERVAL_LOW]
+
+    for name in ("README.md", "README.de.md"):
+        text = (ROOT / name).read_text(encoding="utf-8")
+        assert f"**{fast} s**" in text, f"{name} does not document the fast default"
+        assert f"**{slow} s**" in text, f"{name} does not document the slow default"
+
+
 def test_every_platform_module_exists():
     from shelly_modbus.const import PLATFORMS
 
