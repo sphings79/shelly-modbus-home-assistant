@@ -486,6 +486,15 @@ Wer Hardware hat, hängt bitte die Ausgabe von `tests/live_test.py` für sein Ge
 - Wortreihenfolge gegengeprüft mit
   [pipelka/dbus-modbus-shelly](https://github.com/pipelka/dbus-modbus-shelly).
 
+---
+
+## ☕ Unterstützen
+
+Diese Tools entstehen in meiner Freizeit und bleiben kostenlos, quelloffen und cloudfrei.
+Wenn dir eines davon einen Nachmittag gespart hat, kannst du mir [einen Kaffee ausgeben](https://buymeacoffee.com/sphings).
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-sphings-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/sphings)
+
 ## Lizenz
 
 [MIT](LICENSE)
