@@ -488,7 +488,7 @@ Wer Hardware hat, hängt bitte die Ausgabe von `tests/live_test.py` für sein Ge
 
 ---
 
-## ☕ Unterstützen
+## Sponsor this project
 
 Diese Tools entstehen in meiner Freizeit und bleiben kostenlos, quelloffen und cloudfrei.
 Wenn dir eines davon einen Nachmittag gespart hat, kannst du mir [einen Kaffee ausgeben](https://buymeacoffee.com/sphings).
