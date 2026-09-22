@@ -10,6 +10,10 @@
           "unit_id": "Modbus-Unit-ID"
         }
       },
+      "confirm": {
+        "title": "{name} hinzufügen?",
+        "description": "Das Shelly-Gerät „{name}“ wurde unter {host} gefunden. Nach dem Bestätigen wird sein Modell über Modbus-TCP ausgelesen und das Gerät hinzugefügt."
+      },
       "model": {
         "title": "Modell auswählen",
         "description": "Das Gerät meldet „{detected}“. Modell und Messprofil bestätigen oder ein anderes wählen, falls die Erkennung nicht passt.",
@@ -25,7 +29,9 @@
       "unknown": "Unerwarteter Fehler."
     },
     "abort": {
-      "already_configured": "Dieses Gerät ist bereits eingerichtet."
+      "already_configured": "Dieses Gerät ist bereits eingerichtet.",
+      "cannot_connect": "Gerät über Modbus-TCP nicht erreichbar. Modbus in der Weboberfläche des Geräts unter Einstellungen → Modbus aktivieren und das Gerät danach manuell hinzufügen.",
+      "no_components": "Verbindung steht, aber das Gerät stellt keine bekannten Modbus-Komponenten bereit."
     }
   },
   "options": {

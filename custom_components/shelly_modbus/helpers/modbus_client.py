@@ -27,6 +27,7 @@ device's own RPC output:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import socket
 import struct
@@ -64,6 +65,34 @@ def format_host(host: str) -> str:
     if ":" in host and not host.startswith("["):
         return f"[{host}]"
     return host
+
+
+async def async_port_is_open(
+    host: str, port: int, timeout: float = DEFAULT_TIMEOUT
+) -> bool:
+    """Return True when a plain TCP connect to ``host:port`` succeeds.
+
+    A Shelly with Modbus switched off refuses port 502. Asking pymodbus makes
+    that a WARNING plus a retry ("Repeating...."), which is fine for a device
+    the user configured but pure noise for one that mDNS merely announced. This
+    answers the same question quietly, so discovery can bow out before the
+    Modbus client is ever involved.
+    """
+    writer = None
+    try:
+        _, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port), timeout=timeout
+        )
+        return True
+    except (TimeoutError, OSError) as err:
+        _LOGGER.debug("No TCP listener on %s:%s: %s", host, port, err)
+        return False
+    finally:
+        if writer is not None:
+            writer.close()
+            # Closing a socket the peer already dropped is not worth reporting.
+            with contextlib.suppress(OSError):
+                await writer.wait_closed()
 
 
 def register_count(data_type: str, count: int | None = None) -> int:

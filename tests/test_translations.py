@@ -57,9 +57,19 @@ def test_placeholders_are_consistent(language):
 def test_config_and_options_steps_exist(language):
     data = load(language)
     assert data["config"]["step"]["user"]["data"]["host"]
+    assert data["config"]["step"]["confirm"]["title"]
     assert data["config"]["step"]["model"]["data"]["model"]
     assert data["options"]["step"]["init"]["data"]["scan_interval_high"]
     assert data["options"]["step"]["init"]["data"]["scan_interval_low"]
+
+
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_every_abort_reason_is_translated(language):
+    """An untranslated abort reason shows up as a raw key in the UI."""
+    aborts = load(language)["config"]["abort"]
+
+    for reason in ("already_configured", "cannot_connect", "no_components"):
+        assert aborts.get(reason)
 
 
 @pytest.mark.parametrize("language", LANGUAGES)

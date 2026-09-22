@@ -36,7 +36,11 @@ from .const import (
     SCAN_INTERVAL_LIMITS,
     SCAN_INTERVAL_LOW,
 )
-from .helpers.modbus_client import ShellyModbusClient, decode_registers
+from .helpers.modbus_client import (
+    ShellyModbusClient,
+    async_port_is_open,
+    decode_registers,
+)
 from .registers import load_components, load_models, preload
 
 _LOGGER = logging.getLogger(__name__)
@@ -120,6 +124,7 @@ class ShellyModbusConfigFlow(ConfigFlow, domain=DOMAIN):
         self._port: int = DEFAULT_PORT
         self._unit_id: int = DEFAULT_UNIT_ID
         self._info: dict[str, Any] = {}
+        self._name: str | None = None
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -133,7 +138,15 @@ class ShellyModbusConfigFlow(ConfigFlow, domain=DOMAIN):
             self._port = int(user_input.get("port", DEFAULT_PORT))
             self._unit_id = int(user_input.get(CONF_UNIT_ID, DEFAULT_UNIT_ID))
 
-            info = await async_identify_device(self._host, self._port, self._unit_id)
+            # A closed port is the common case behind a typo or a device whose
+            # Modbus server is off. Answering it with one TCP connect is both
+            # faster and quieter than letting the Modbus client retry.
+            if not await async_port_is_open(self._host, self._port):
+                info = None
+            else:
+                info = await async_identify_device(
+                    self._host, self._port, self._unit_id
+                )
 
             if info is None:
                 errors["base"] = "cannot_connect"
@@ -241,8 +254,6 @@ class ShellyModbusConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_zeroconf(self, discovery_info) -> ConfigFlowResult:
         """Handle a Shelly announced over mDNS."""
-        await async_preload_registers(self.hass)
-
         host = discovery_info.host
         properties = getattr(discovery_info, "properties", {}) or {}
 
@@ -265,17 +276,45 @@ class ShellyModbusConfigFlow(ConfigFlow, domain=DOMAIN):
         self._host = host
         self._port = DEFAULT_PORT
         self._unit_id = DEFAULT_UNIT_ID
+        # The announcement names the device long before Modbus could tell us
+        # its model, and every announcement carries it.
+        self._name = name.split(".")[0] or host
 
-        info = await async_identify_device(host, self._port, self._unit_id)
-        if info is None or not info["components"]:
-            # Modbus is off, or this model does not implement it at all.
+        # Home Assistant restarts a discovery flow on every re-announcement,
+        # so anything this step does runs again every few minutes for as long
+        # as the device is on the network. A device with Modbus switched off
+        # refuses port 502, and going through the Modbus client for that would
+        # leave two warnings per announcement in the log forever. Bow out on a
+        # single quiet TCP connect instead.
+        if not await async_port_is_open(host, self._port):
             return self.async_abort(reason="cannot_connect")
 
+        self.context["title_placeholders"] = {"name": self._name}
+        return await self.async_step_confirm()
+
+    async def async_step_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Ask before touching a discovered device over Modbus."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id="confirm",
+                description_placeholders={
+                    "name": self._name or self._host,
+                    "host": self._host,
+                },
+            )
+
+        await async_preload_registers(self.hass)
+
+        info = await async_identify_device(self._host, self._port, self._unit_id)
+        if info is None:
+            return self.async_abort(reason="cannot_connect")
+        if not info["components"]:
+            # Reachable, but this model does not implement the blocks we read.
+            return self.async_abort(reason="no_components")
+
         self._info = info
-        model = info.get("model")
-        self.context["title_placeholders"] = {
-            "name": load_models().get(model, {}).get("name", model or host)
-        }
         return await self.async_step_model()
 
     @staticmethod

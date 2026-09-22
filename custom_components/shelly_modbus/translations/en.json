@@ -10,6 +10,10 @@
           "unit_id": "Modbus unit ID"
         }
       },
+      "confirm": {
+        "title": "Add {name}?",
+        "description": "The Shelly “{name}” was found at {host}. On confirmation its model is read over Modbus-TCP and the device is added."
+      },
       "model": {
         "title": "Select model",
         "description": "The device reported “{detected}”. Confirm the model and measuring profile, or pick a different one if the detection was wrong.",
@@ -25,7 +29,9 @@
       "unknown": "Unexpected error."
     },
     "abort": {
-      "already_configured": "This device is already configured."
+      "already_configured": "This device is already configured.",
+      "cannot_connect": "Cannot reach the device over Modbus-TCP. Enable Modbus in the device web interface under Settings → Modbus, then add the device manually.",
+      "no_components": "Connected, but the device did not expose any known Modbus components."
     }
   },
   "options": {
