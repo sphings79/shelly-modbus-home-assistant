@@ -6,10 +6,12 @@
 
 **Shelly-Energiezähler und -Relais über lokales Modbus-TCP auslesen — ohne Cloud, ohne RPC-Polling.**
 
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://hacs.xyz)
+[![HACS Default](https://img.shields.io/badge/HACS-default-41BDF5.svg?style=flat-square)](https://hacs.xyz)
 [![Validate](https://img.shields.io/github/actions/workflow/status/sphings79/shelly-modbus-home-assistant/validate.yml?branch=main&label=validate&style=flat-square)](https://github.com/sphings79/shelly-modbus-home-assistant/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-3DDC97.svg?style=flat-square)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.9%2B-41BDF5.svg?style=flat-square)](https://www.home-assistant.io)
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sphings79&repository=shelly-modbus-home-assistant&category=integration)
 
 [English](README.md) · **Deutsch**
 
@@ -120,12 +122,10 @@ komplett. Die Integration ermittelt das aktive Profil selbst und lässt es über
 
 ### Variante A — HACS (empfohlen)
 
-1. **HACS** in Home Assistant öffnen.
-2. Im Drei-Punkte-Menü → **Benutzerdefinierte Repositories**.
-3. `https://github.com/sphings79/shelly-modbus-home-assistant` mit Kategorie **Integration**
-   hinzufügen.
-4. Nach **Shelly Modbus** suchen und installieren.
-5. Home Assistant neu starten.
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sphings79&repository=shelly-modbus-home-assistant&category=integration)
+
+1. **HACS** in Home Assistant öffnen, nach **Shelly Modbus** suchen und installieren (oder den Button oben nutzen).
+2. Home Assistant neu starten.
 
 ### Variante B — manuell
 
